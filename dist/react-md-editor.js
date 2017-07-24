@@ -11084,7 +11084,7 @@ var MarkdownEditor = React.createClass({
 	renderButton: function renderButton(formatKey, label, action) {
 		if (!action) action = this.toggleFormat.bind(this, formatKey);
 		if (this.props.renderButton) {
-			return this.props.renderButton(formatKey, label, action);
+			return this.props.renderButton(formatKey, label, action, this.state.cs[formatKey]);
 		}
 
 		var isTextIcon = formatKey === 'h1' || formatKey === 'h2' || formatKey === 'h3';
