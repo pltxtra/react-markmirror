@@ -17,6 +17,8 @@ var MarkdownEditor = React.createClass({
 		options: React.PropTypes.object,
 		path: React.PropTypes.string,
 		value: React.PropTypes.string,
+		renderToolbar: React.PropTypes.func,
+		renderButton: React.PropTypes.func
 	},
 
 	getInitialState () {
@@ -92,6 +94,9 @@ var MarkdownEditor = React.createClass({
 
 	renderButton (formatKey, label, action) {
 		if (!action) action = this.toggleFormat.bind(this, formatKey);
+		if (this.props.renderButton) {
+			return this.props.renderButton(formatKey, label, action);
+		}
 
 		var isTextIcon = (formatKey === 'h1' || formatKey === 'h2' || formatKey === 'h3');
 		var className = classNames('MDEditor_toolbarButton', {
@@ -109,6 +114,10 @@ var MarkdownEditor = React.createClass({
 	},
 
 	renderToolbar () {
+		if (this.props.renderToolbar) {
+			return this.props.renderToolbar();
+		}
+
 		return (
 			<div className="MDEditor_toolbar">
 				{this.renderButton('h1', 'h1')}
