@@ -11108,7 +11108,7 @@ var MarkdownEditor = React.createClass({
 
 	renderToolbar: function renderToolbar() {
 		if (this.props.renderToolbar) {
-			return this.props.renderToolbar(this.state.cs, this.toggleFormat);
+			return this.props.renderToolbar(this.state.cs);
 		}
 
 		return React.createElement(
@@ -11121,7 +11121,9 @@ var MarkdownEditor = React.createClass({
 			this.renderButton('italic', 'i'),
 			this.renderButton('oList', 'ol'),
 			this.renderButton('uList', 'ul'),
-			this.renderButton('quote', 'q')
+			this.renderButton('quote', 'q'),
+			this.renderButton('link', 'a'),
+			this.renderButton('image', 'img')
 		);
 	},
 
@@ -11138,15 +11140,13 @@ var MarkdownEditor = React.createClass({
 			)
 		);
 	}
-
 });
 
 exports['default'] = MarkdownEditor;
 module.exports = exports['default'];
-/*this.renderButton('link', 'a')*/
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./format.js":7,"./icons":9,"classnames":undefined,"codemirror":2,"codemirror/addon/edit/continuelist":1,"codemirror/mode/markdown/markdown":3,"codemirror/mode/xml/xml":5,"react-dom":undefined}],7:[function(require,module,exports){
+},{"./format.js":7,"./icons":10,"classnames":undefined,"codemirror":2,"codemirror/addon/edit/continuelist":1,"codemirror/mode/markdown/markdown":3,"codemirror/mode/xml/xml":5,"react-dom":undefined}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -11154,6 +11154,9 @@ Object.defineProperty(exports, '__esModule', {
 });
 exports.getCursorState = getCursorState;
 exports.applyFormat = applyFormat;
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
 var FORMATS = {
 	h1: { type: 'block', token: 'header-1', before: '#', re: /^#\s+/, placeholder: 'Heading' },
 	h2: { type: 'block', token: 'header-2', before: '##', re: /^##\s+/, placeholder: 'Heading' },
@@ -11162,7 +11165,9 @@ var FORMATS = {
 	italic: { type: 'inline', token: 'em', before: '_', after: '_', placeholder: 'italic text' },
 	quote: { type: 'block', token: 'quote', re: /^\>\s+/, before: '>', placeholder: 'quote' },
 	oList: { type: 'block', before: '1. ', re: /^\d+\.\s+/, placeholder: 'List' },
-	uList: { type: 'block', before: '* ', re: /^[\*\-]\s+/, placeholder: 'List' }
+	uList: { type: 'block', before: '* ', re: /^[\*\-]\s+/, placeholder: 'List' },
+	link: { type: 'inline', token: 'link', before: '[link](', after: ')', re: /\[(?:[^\]]+)\]\(([^)]+)\)/, placeholder: 'Link' },
+	image: { type: 'inline', token: 'image', before: '![Alt Text](', after: ')', re: /\!\[(?:[^\]]+)\]\(([^)]+)\)/, placeholder: 'Image' }
 };
 
 var FORMAT_TOKENS = {};
@@ -11170,38 +11175,70 @@ Object.keys(FORMATS).forEach(function (key) {
 	if (FORMATS[key].token) FORMAT_TOKENS[FORMATS[key].token] = key;
 });
 
-function getCursorState(cm, pos) {
-	pos = pos || cm.getCursor('start');
-	var cs = {};
-	var token = cs.token = cm.getTokenAt(pos);
-	if (!token.type) return cs;
-	var tokens = token.type.split(' ');
-	tokens.forEach(function (t) {
-		if (FORMAT_TOKENS[t]) {
-			cs[FORMAT_TOKENS[t]] = true;
-			return;
+function getCursorState(cm) {
+	var cursor = cm.getCursor();
+	var lineTokens = cm.getLineTokens(cursor.line);
+	var prevLineTokens = [];
+	var curToken = null;
+	var token = null;
+
+	while (curToken = lineTokens.shift()) {
+		if (cursor.ch >= curToken.start && cursor.ch <= curToken.end) {
+			token = curToken;
+			break;
 		}
+		prevLineTokens.push(curToken);
+	}
+
+	var tokenTypes = token ? getTokenTypes(token, prevLineTokens) : [];
+	var cs = { token: token };
+	tokenTypes.forEach(function (t) {
+		return cs[t] = true;
+	});
+	return cs;
+}
+
+var getTokenTypes = function getTokenTypes(token, previousTokens) {
+	var tokenTypes = [];
+
+	if (!token.type) {
+		return [];
+	}
+
+	token.type.split(' ').forEach(function (t) {
 		switch (t) {
 			case 'link':
-				cs.link = true;
-				cs.link_label = true;
+				// if already identified as image, don't include link
+				if (tokenTypes.indexOf('image') === -1) {
+					tokenTypes.push('link');
+				}
+				break;
+			case 'image':
+				tokenTypes.push('image');
 				break;
 			case 'string':
-				cs.link = true;
-				cs.link_href = true;
+				var prevToken = previousTokens.pop();
+				var returnTokens = getTokenTypes(prevToken, previousTokens);
+				tokenTypes.push.apply(tokenTypes, _toConsumableArray(returnTokens));
 				break;
 			case 'variable-2':
-				var text = cm.getLine(pos.line);
-				if (/^\s*\d+\.\s/.test(text)) {
-					cs.oList = true;
+				var firstToken = previousTokens.length > 0 ? previousTokens.shift() : token;
+				if (/^\s*\d+\.\s/.test(firstToken.string)) {
+					tokenTypes.push('oList');
 				} else {
-					cs.uList = true;
+					tokenTypes.push('uList');
+				}
+				break;
+			default:
+				if (FORMAT_TOKENS[t]) {
+					tokenTypes.push(FORMAT_TOKENS[t]);
 				}
 				break;
 		}
 	});
-	return cs;
-}
+
+	return tokenTypes;
+};
 
 function applyFormat(cm, key) {
 	var cs = getCursorState(cm);
@@ -11225,6 +11262,14 @@ var operations = {
 		var startPoint = cm.getCursor('start');
 		var endPoint = cm.getCursor('end');
 		var line = cm.getLine(startPoint.line);
+
+		if (format.hasOwnProperty('re')) {
+			var text = line.replace(format.re, '$1');
+			cm.replaceRange(text, { line: startPoint.line, ch: 0 }, { line: startPoint.line, ch: line.length + 1 });
+			cm.setSelection({ line: startPoint.line, ch: startPoint.ch }, { line: startPoint.line, ch: startPoint.ch });
+			cm.focus();
+			return;
+		}
 
 		var startPos = startPoint.ch;
 		while (startPos) {
@@ -11275,36 +11320,42 @@ module.exports = '<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns=
 },{}],9:[function(require,module,exports){
 'use strict';
 
+module.exports = '<svg width="1850" height="1850" viewBox="0 -256 1850 1850"><path d="m 928,704 q 0,14 -9,23 -9,9 -23,9 -66,0 -113,-47 -47,-47 -47,-113 0,-14 9,-23 9,-9 23,-9 14,0 23,9 9,9 9,23 0,40 28,68 28,28 68,28 14,0 23,9 9,9 9,23 z m 224,-130 q 0,-106 -75,-181 -75,-75 -181,-75 -106,0 -181,75 -75,75 -75,181 0,106 75,181 75,75 181,75 106,0 181,-75 75,-75 75,-181 z M 128,0 H 1664 V 128 H 128 V 0 z m 1152,574 q 0,159 -112.5,271.5 Q 1055,958 896,958 737,958 624.5,845.5 512,733 512,574 512,415 624.5,302.5 737,190 896,190 1055,190 1167.5,302.5 1280,415 1280,574 z M 256,1216 h 384 v 128 H 256 V 1216 z M 128,1024 h 1536 v 118 138 H 836 L 772,1152 H 128 v -128 z m 1664,256 V 0 q 0,-53 -37.5,-90.5 Q 1717,-128 1664,-128 H 128 Q 75,-128 37.5,-90.5 0,-53 0,0 v 1280 q 0,53 37.5,90.5 Q 75,1408 128,1408 h 1536 q 53,0 90.5,-37.5 37.5,-37.5 37.5,-90.5 z"/></svg>';
+
+},{}],10:[function(require,module,exports){
+'use strict';
+
 module.exports = {
 	bold: require('./bold'),
 	italic: require('./italic'),
+	image: require('./image'),
 	link: require('./link'),
 	uList: require('./uList'),
 	oList: require('./oList'),
 	quote: require('./quote')
 };
 
-},{"./bold":8,"./italic":10,"./link":11,"./oList":12,"./quote":13,"./uList":14}],10:[function(require,module,exports){
+},{"./bold":8,"./image":9,"./italic":11,"./link":12,"./oList":13,"./quote":14,"./uList":15}],11:[function(require,module,exports){
 'use strict';
 
 module.exports = '<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M384 1662l17-85q6-2 81.5-21.5t111.5-37.5q28-35 41-101 1-7 62-289t114-543.5 52-296.5v-25q-24-13-54.5-18.5t-69.5-8-58-5.5l19-103q33 2 120 6.5t149.5 7 120.5 2.5q48 0 98.5-2.5t121-7 98.5-6.5q-5 39-19 89-30 10-101.5 28.5t-108.5 33.5q-8 19-14 42.5t-9 40-7.5 45.5-6.5 42q-27 148-87.5 419.5t-77.5 355.5q-2 9-13 58t-20 90-16 83.5-6 57.5l1 18q17 4 185 31-3 44-16 99-11 0-32.5 1.5t-32.5 1.5q-29 0-87-10t-86-10q-138-2-206-2-51 0-143 9t-121 11z"/></svg>';
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 module.exports = '<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1520 1216q0-40-28-68l-208-208q-28-28-68-28-42 0-72 32 3 3 19 18.5t21.5 21.5 15 19 13 25.5 3.5 27.5q0 40-28 68t-68 28q-15 0-27.5-3.5t-25.5-13-19-15-21.5-21.5-18.5-19q-33 31-33 73 0 40 28 68l206 207q27 27 68 27 40 0 68-26l147-146q28-28 28-67zm-703-705q0-40-28-68l-206-207q-28-28-68-28-39 0-68 27l-147 146q-28 28-28 67 0 40 28 68l208 208q27 27 68 27 42 0 72-31-3-3-19-18.5t-21.5-21.5-15-19-13-25.5-3.5-27.5q0-40 28-68t68-28q15 0 27.5 3.5t25.5 13 19 15 21.5 21.5 18.5 19q33-31 33-73zm895 705q0 120-85 203l-147 146q-83 83-203 83-121 0-204-85l-206-207q-83-83-83-203 0-123 88-209l-88-88q-86 88-208 88-120 0-204-84l-208-208q-84-84-84-204t85-203l147-146q83-83 203-83 121 0 204 85l206 207q83 83 83 203 0 123-88 209l88 88q86-88 208-88 120 0 204 84l208 208q84 84 84 204z"/></svg>';
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 module.exports = '<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M381 1620q0 80-54.5 126t-135.5 46q-106 0-172-66l57-88q49 45 106 45 29 0 50.5-14.5t21.5-42.5q0-64-105-56l-26-56q8-10 32.5-43.5t42.5-54 37-38.5v-1q-16 0-48.5 1t-48.5 1v53h-106v-152h333v88l-95 115q51 12 81 49t30 88zm2-627v159h-362q-6-36-6-54 0-51 23.5-93t56.5-68 66-47.5 56.5-43.5 23.5-45q0-25-14.5-38.5t-39.5-13.5q-46 0-81 58l-85-59q24-51 71.5-79.5t105.5-28.5q73 0 123 41.5t50 112.5q0 50-34 91.5t-75 64.5-75.5 50.5-35.5 52.5h127v-60h105zm1409 319v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-14 9-23t23-9h1216q13 0 22.5 9.5t9.5 22.5zm-1408-899v99h-335v-99h107q0-41 .5-122t.5-121v-12h-2q-8 17-50 54l-71-76 136-127h106v404h108zm1408 387v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-14 9-23t23-9h1216q13 0 22.5 9.5t9.5 22.5zm0-512v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5z"/></svg>';
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 module.exports = '<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M832 960v384q0 80-56 136t-136 56h-384q-80 0-136-56t-56-136v-704q0-104 40.5-198.5t109.5-163.5 163.5-109.5 198.5-40.5h64q26 0 45 19t19 45v128q0 26-19 45t-45 19h-64q-106 0-181 75t-75 181v32q0 40 28 68t68 28h224q80 0 136 56t56 136zm896 0v384q0 80-56 136t-136 56h-384q-80 0-136-56t-56-136v-704q0-104 40.5-198.5t109.5-163.5 163.5-109.5 198.5-40.5h64q26 0 45 19t19 45v128q0 26-19 45t-45 19h-64q-106 0-181 75t-75 181v32q0 40 28 68t68 28h224q80 0 136 56t56 136z"/></svg>';
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 module.exports = '<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M384 1408q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm0-512q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm1408 416v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5zm-1408-928q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm1408 416v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5zm0-512v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5z"/></svg>';

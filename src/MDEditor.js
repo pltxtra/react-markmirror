@@ -24,7 +24,7 @@ var MarkdownEditor = React.createClass({
 	getInitialState () {
 		return {
 			isFocused: false,
-			cs: {},
+			cs: {}
 		};
 	},
 
@@ -42,7 +42,7 @@ var MarkdownEditor = React.createClass({
 			mode: 'markdown',
 			lineNumbers: false,
 			indentWithTabs: true,
-			tabSize: '2',
+			tabSize: '2'
 		}, this.props.options);
 	},
 
@@ -115,7 +115,7 @@ var MarkdownEditor = React.createClass({
 
 	renderToolbar () {
 		if (this.props.renderToolbar) {
-			return this.props.renderToolbar(this.state.cs, this.toggleFormat);
+			return this.props.renderToolbar(this.state.cs);
 		}
 
 		return (
@@ -128,7 +128,8 @@ var MarkdownEditor = React.createClass({
 				{this.renderButton('oList', 'ol')}
 				{this.renderButton('uList', 'ul')}
 				{this.renderButton('quote', 'q')}
-				{/*this.renderButton('link', 'a')*/}
+				{this.renderButton('link', 'a')}
+				{this.renderButton('image', 'img')}
 			</div>
 		);
 	},
@@ -144,7 +145,6 @@ var MarkdownEditor = React.createClass({
 			</div>
 		);
 	}
-
 });
 
 export default MarkdownEditor;
