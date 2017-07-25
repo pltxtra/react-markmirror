@@ -15,21 +15,13 @@ var App = React.createClass({
 		});
 	},
 
-	renderButton(formatKey, label, action) {
-		return (
-			<button onClick={action} title={formatKey}>
-				<span>{label}</span>
-			</button>
-		);
-	},
-
 	render () {
 		var preview = marked(this.state.code);
 		return (
 			<div className="example">
 				<div className="hint">The editor is below, with default options. This example also uses marked to generate the preview on the right as you type.</div>
 				<div className="editor">
-					<Editor value={this.state.code} onChange={this.updateCode} renderButton={this.renderButton} />
+					<Editor value={this.state.code} onChange={this.updateCode} />
 				</div>
 				<div className="preview" dangerouslySetInnerHTML={{__html: preview}} />
 			</div>

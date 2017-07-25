@@ -115,7 +115,7 @@ var MarkdownEditor = React.createClass({
 
 	renderToolbar () {
 		if (this.props.renderToolbar) {
-			return this.props.renderToolbar();
+			return this.props.renderToolbar(this.state.cs, this.toggleFormat);
 		}
 
 		return (
