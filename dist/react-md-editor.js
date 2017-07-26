@@ -11985,13 +11985,14 @@ var MarkdownEditor = React.createClass({
 
 	renderButton: function renderButton(formatKey, label, action) {
 		if (!action) action = this.toggleFormat.bind(this, formatKey);
+		var pressed = this.state.cs[formatKey] || formatKey === 'full' && this.state.isFullScreen;
 		if (this.props.renderButton) {
-			return this.props.renderButton(formatKey, label, action, this.state.cs[formatKey]);
+			return this.props.renderButton(formatKey, label, action, pressed);
 		}
 
 		var isTextIcon = formatKey === 'h1' || formatKey === 'h2' || formatKey === 'h3' || formatKey === 'full';
 		var className = classNames('MDEditor_toolbarButton', {
-			'MDEditor_toolbarButton--pressed': this.state.cs[formatKey] || formatKey === 'full' && this.state.isFullScreen
+			'MDEditor_toolbarButton--pressed': pressed
 		}, 'MDEditor_toolbarButton--' + formatKey);
 
 		var labelClass = isTextIcon ? 'MDEditor_toolbarButton_label-icon' : 'MDEditor_toolbarButton_label';
