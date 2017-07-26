@@ -1,20 +1,6 @@
 /**
  * Markdown Editor
  */
-.MDEditor:-webkit-full-screen,
-.MDEditor:-moz-full-screen,
-.MDEditor:-ms-fullscreen,
-.MDEditor:fullscreen {
-  width: 100%;
-  height: 100%;
-}
-.MDEditor:-webkit-full-screen .MDEditor_editor,
-.MDEditor:-moz-full-screen .MDEditor_editor,
-.MDEditor:-ms-fullscreen .MDEditor_editor,
-.MDEditor:fullscreen .MDEditor_editor {
-  width: 100%;
-  height: 100%;
-}
 .MDEditor_editor {
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -77,4 +63,14 @@
   line-height: .9;
   height: 16px;
   text-transform: uppercase;
+}
+.MDFullScreen {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+}
+.MDFullScreen .MDEditor_editor,
+.MDFullScreen .CodeMirror {
+  width: 100%;
+  height: 100%;
 }

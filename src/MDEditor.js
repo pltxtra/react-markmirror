@@ -37,6 +37,11 @@ var MarkdownEditor = React.createClass({
 		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
 		this.codeMirror.on('cursorActivity', this.updateCursorState);
 		this._currentCodemirrorValue = this.props.value;
+
+		document.addEventListener("fullscreenchange", this.handleFullScreen);
+		document.addEventListener("webkitfullscreenchange", this.handleFullScreen);
+		document.addEventListener("mozfullscreenchange", this.handleFullScreen);
+		document.addEventListener("MSFullscreenChange", this.handleFullScreen);
 	},
 
 	getOptions () {
@@ -54,6 +59,10 @@ var MarkdownEditor = React.createClass({
 		if (this.codeMirror) {
 			this.codeMirror.toTextArea();
 		}
+		document.removeEventListener("fullscreenchange", this.handleFullScreen);
+		document.removeEventListener("webkitfullscreenchange", this.handleFullScreen);
+		document.removeEventListener("mozfullscreenchange", this.handleFullScreen);
+		document.removeEventListener("MSFullscreenChange", this.handleFullScreen);
 	},
 
 	componentWillReceiveProps (nextProps) {
@@ -102,7 +111,7 @@ var MarkdownEditor = React.createClass({
 			} else if (this.rootRef.msRequestFullscreen) {
 				this.rootRef.msRequestFullscreen();
 			}
-			this.setState({isFullScreen: true});
+			this.rootRef.classList.add('MDFullScreen');
 		} else {
 			if (document.exitFullscreen) {
 				document.exitFullscreen();
@@ -113,8 +122,24 @@ var MarkdownEditor = React.createClass({
 			} else if (document.msExitFullscreen) {
 				document.msExitFullscreen();
 			}
-			this.setState({isFullScreen: false});
+			this.rootRef.classList.remove('MDFullScreen');
 		}
+	},
+
+	handleFullScreen() {
+		var isFullScreen = false;
+		if (document.fullscreenElement) {
+			isFullScreen = true;
+		} else if (document.webkitFullscreenElement) {
+			isFullScreen = true;
+		} else if (document.mozFullscreenElement) {
+			isFullScreen = true;
+		} else if (document.msFullscreenElement) {
+			isFullScreen = true;
+		}
+		this.setState({
+			isFullScreen: isFullScreen
+		});
 	},
 
 	renderIcon (icon) {
@@ -129,7 +154,7 @@ var MarkdownEditor = React.createClass({
 
 		var isTextIcon = (formatKey === 'h1' || formatKey === 'h2' || formatKey === 'h3' || formatKey === 'full');
 		var className = classNames('MDEditor_toolbarButton', {
-			'MDEditor_toolbarButton--pressed': this.state.cs[formatKey]
+			'MDEditor_toolbarButton--pressed': (this.state.cs[formatKey] || (formatKey === 'full' && this.state.isFullScreen))
 		}, ('MDEditor_toolbarButton--' + formatKey));
 
 		var labelClass = isTextIcon ? 'MDEditor_toolbarButton_label-icon' : 'MDEditor_toolbarButton_label';

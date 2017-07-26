@@ -4,19 +4,6 @@
 
 @button-gutter: 4px;
 
-.MDEditor:-webkit-full-screen,
-.MDEditor:-moz-full-screen,
-.MDEditor:-ms-fullscreen,
-.MDEditor:fullscreen {
-	width: 100%;
-	height: 100%;
-
-	.MDEditor_editor {
-	  width: 100%;
-	  height: 100%;
-	}
-}
-
 .MDEditor_editor {
 	border: 1px solid #ccc;
 	border-radius: 4px;
@@ -97,11 +84,14 @@
 	text-transform: uppercase;
 }
 
+.MDFullScreen {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
 
-
-
-
-
-
-
-
+  .MDEditor_editor,
+  .CodeMirror {
+	width: 100%;
+	height: 100%;
+  }
+}
