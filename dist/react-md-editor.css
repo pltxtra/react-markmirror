@@ -1,6 +1,18 @@
 /**
  * Markdown Editor
  */
+.MDEditor:-webkit-full-screen,
+.MDEditor:-moz-full-screen,
+.MDEditor:-ms-fullscreen .MDEditor:fullscreen {
+  width: 100%;
+  height: 100%;
+}
+.MDEditor:-webkit-full-screen .MDEditor_editor,
+.MDEditor:-moz-full-screen .MDEditor_editor,
+.MDEditor:-ms-fullscreen .MDEditor:fullscreen .MDEditor_editor {
+  width: 100%;
+  height: 100%;
+}
 .MDEditor_editor {
   border: 1px solid #ccc;
   border-radius: 4px;

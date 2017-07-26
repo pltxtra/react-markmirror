@@ -11862,6 +11862,7 @@ var MarkdownEditor = React.createClass({
 	getInitialState: function getInitialState() {
 		return {
 			isFocused: false,
+			isFullScreen: false,
 			cs: {}
 		};
 	},
@@ -11927,6 +11928,32 @@ var MarkdownEditor = React.createClass({
 		(0, _formatJs.applyFormat)(this.codeMirror, formatKey);
 	},
 
+	toggleFullScreen: function toggleFullScreen() {
+		if (!this.state.isFullScreen) {
+			if (this.rootRef.requestFullscreen) {
+				this.rootRef.requestFullscreen();
+			} else if (this.rootRef.webkitRequestFullscreen) {
+				this.rootRef.webkitRequestFullscreen();
+			} else if (this.rootRef.mozRequestFullScreen) {
+				this.rootRef.mozRequestFullScreen();
+			} else if (this.rootRef.msRequestFullscreen) {
+				this.rootRef.msRequestFullscreen();
+			}
+			this.setState({ isFullScreen: true });
+		} else {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.msExitFullscreen) {
+				document.msExitFullscreen();
+			}
+			this.setState({ isFullScreen: false });
+		}
+	},
+
 	renderIcon: function renderIcon(icon) {
 		return React.createElement('span', { dangerouslySetInnerHTML: { __html: icon }, className: 'MDEditor_toolbarButton_icon' });
 	},
@@ -11937,7 +11964,7 @@ var MarkdownEditor = React.createClass({
 			return this.props.renderButton(formatKey, label, action, this.state.cs[formatKey]);
 		}
 
-		var isTextIcon = formatKey === 'h1' || formatKey === 'h2' || formatKey === 'h3';
+		var isTextIcon = formatKey === 'h1' || formatKey === 'h2' || formatKey === 'h3' || formatKey === 'full';
 		var className = classNames('MDEditor_toolbarButton', {
 			'MDEditor_toolbarButton--pressed': this.state.cs[formatKey]
 		}, 'MDEditor_toolbarButton--' + formatKey);
@@ -11973,15 +12000,20 @@ var MarkdownEditor = React.createClass({
 			this.renderButton('uList', 'ul'),
 			this.renderButton('quote', 'q'),
 			this.renderButton('link', 'a'),
-			this.renderButton('image', 'img')
+			this.renderButton('image', 'img'),
+			this.renderButton('full', 'full', this.toggleFullScreen)
 		);
 	},
 
 	render: function render() {
+		var _this = this;
+
 		var editorClassName = classNames('MDEditor_editor', { 'MDEditor_editor--focused': this.state.isFocused });
 		return React.createElement(
 			'div',
-			{ className: 'MDEditor' },
+			{ className: 'MDEditor', ref: function (ref) {
+					_this.rootRef = ref;
+				}, allowFullScreen: true },
 			this.renderToolbar(),
 			React.createElement(
 				'div',

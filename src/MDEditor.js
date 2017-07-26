@@ -25,6 +25,7 @@ var MarkdownEditor = React.createClass({
 	getInitialState () {
 		return {
 			isFocused: false,
+			isFullScreen: false,
 			cs: {}
 		};
 	},
@@ -90,6 +91,32 @@ var MarkdownEditor = React.createClass({
 		applyFormat(this.codeMirror, formatKey);
 	},
 
+	toggleFullScreen() {
+		if (!this.state.isFullScreen) {
+			if (this.rootRef.requestFullscreen) {
+				this.rootRef.requestFullscreen();
+			} else if (this.rootRef.webkitRequestFullscreen) {
+				this.rootRef.webkitRequestFullscreen();
+			} else if (this.rootRef.mozRequestFullScreen) {
+				this.rootRef.mozRequestFullScreen();
+			} else if (this.rootRef.msRequestFullscreen) {
+				this.rootRef.msRequestFullscreen();
+			}
+			this.setState({isFullScreen: true});
+		} else {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.msExitFullscreen) {
+				document.msExitFullscreen();
+			}
+			this.setState({isFullScreen: false});
+		}
+	},
+
 	renderIcon (icon) {
 		return <span dangerouslySetInnerHTML={{__html: icon}} className="MDEditor_toolbarButton_icon" />;
 	},
@@ -100,7 +127,7 @@ var MarkdownEditor = React.createClass({
 			return this.props.renderButton(formatKey, label, action, this.state.cs[formatKey]);
 		}
 
-		var isTextIcon = (formatKey === 'h1' || formatKey === 'h2' || formatKey === 'h3');
+		var isTextIcon = (formatKey === 'h1' || formatKey === 'h2' || formatKey === 'h3' || formatKey === 'full');
 		var className = classNames('MDEditor_toolbarButton', {
 			'MDEditor_toolbarButton--pressed': this.state.cs[formatKey]
 		}, ('MDEditor_toolbarButton--' + formatKey));
@@ -132,6 +159,7 @@ var MarkdownEditor = React.createClass({
 				{this.renderButton('quote', 'q')}
 				{this.renderButton('link', 'a')}
 				{this.renderButton('image', 'img')}
+				{this.renderButton('full', 'full', this.toggleFullScreen)}
 			</div>
 		);
 	},
@@ -139,7 +167,7 @@ var MarkdownEditor = React.createClass({
 	render () {
 		var editorClassName = classNames('MDEditor_editor', { 'MDEditor_editor--focused': this.state.isFocused });
 		return (
-			<div className="MDEditor">
+			<div className="MDEditor" ref={(ref) => { this.rootRef = ref; }} allowFullScreen>
 				{this.renderToolbar()}
 				<div className={editorClassName}>
 					<textarea ref="codemirror" name={this.props.path} defaultValue={this.props.value} autoComplete="off" />
