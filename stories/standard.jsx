@@ -21,6 +21,10 @@ class Story extends React.Component {
 
     return (
       <div>
+        <p>
+          The <a href="https://www.npmjs.com/package/marked">marked</a> npm package is needed to display previews in your own projects.
+          Use <code>npm install --save marked</code> to install it.
+        </p>
         <section>
           <Markmirror value={code} onChange={this.handleChange} />
         </section>
