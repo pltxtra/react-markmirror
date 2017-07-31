@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import Marked from 'marked';
-import MDEditor from '../src/js/index';
+import Markmirror from '../src/js/index';
 import '../node_modules/codemirror/lib/codemirror.css';
 import '../src/less/main.less';
 
@@ -23,7 +23,7 @@ class Story extends React.Component {
     return (
       <div>
         <div>
-          <MDEditor value={code} onChange={this.handleChange} />
+          <Markmirror value={code} onChange={this.handleChange} />
         </div>
         <div dangerouslySetInnerHTML={{ __html: Marked(code) }} />
       </div>
@@ -31,6 +31,6 @@ class Story extends React.Component {
   }
 }
 
-storiesOf('MDEditor', module)
+storiesOf('Markmirror', module)
   .add('standard', () => <Story />
 );

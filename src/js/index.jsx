@@ -6,24 +6,41 @@ import CM from 'codemirror';
 import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/addon/edit/continuelist';
+import * as Icons from '../icons';
 import { getCursorState, applyFormat } from './format';
-import Icons from '../icons';
+import { objectKeyFilter } from './utils/objects';
 import '../less/main.less';
 
-export default class MarkdownEditor extends React.Component {
+const BUTTON_TITLES = {
+  h1:     'Header 1',
+  h2:     'Header 2',
+  h3:     'Header 3',
+  bold:   'Bold',
+  italic: 'Italic',
+  oList:  'Ordered List',
+  uList:  'Unordered List',
+  quote:  'Quote',
+  link:   'Link',
+  image:  'Image',
+  full:   'Fullscreen'
+};
+
+export default class Markmirror extends React.Component {
   static propTypes = {
-    onChange:      PropTypes.func,
-    options:       PropTypes.object,
-    path:          PropTypes.string,
     value:         PropTypes.string,
+    options:       PropTypes.object,
+    name:          PropTypes.string,
+    className:     PropTypes.string,
+    onChange:      PropTypes.func,
     renderToolbar: PropTypes.func,
     renderButton:  PropTypes.func
   };
 
   static defaultProps = {
     options:       {},
-    path:          '',
+    name:          '',
     value:         '',
+    className:     '',
     renderToolbar: null,
     renderButton:  null,
     onChange:      () => {}
@@ -31,6 +48,7 @@ export default class MarkdownEditor extends React.Component {
 
   constructor(props) {
     super(props);
+    this.rootRef       = null;
     this.codemirrorRef = null;
     this.state = {
       cs:           {},
@@ -115,7 +133,7 @@ export default class MarkdownEditor extends React.Component {
       } else if (this.rootRef.msRequestFullscreen) {
         this.rootRef.msRequestFullscreen();
       }
-      this.rootRef.classList.add('MDFullScreen');
+      this.rootRef.classList.add('markmirror--fullscreen');
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen();
@@ -126,7 +144,7 @@ export default class MarkdownEditor extends React.Component {
       } else if (document.msExitFullscreen) {
         document.msExitFullscreen();
       }
-      this.rootRef.classList.remove('MDFullScreen');
+      this.rootRef.classList.remove('markmirror--fullscreen');
     }
   };
 
@@ -146,7 +164,7 @@ export default class MarkdownEditor extends React.Component {
     });
   };
 
-  renderIcon = icon => <span dangerouslySetInnerHTML={{ __html: icon }} className="MDEditor_toolbarButton_icon" />;
+  renderIcon = icon => <span dangerouslySetInnerHTML={{ __html: icon }} className="markmirror__button__icon" />;
 
   renderButton = (formatKey, label, action) => {
     if (!action) {
@@ -158,19 +176,21 @@ export default class MarkdownEditor extends React.Component {
       return this.props.renderButton(formatKey, label, action, pressed);
     }
 
-    const isTextIcon = (formatKey === 'h1' || formatKey === 'h2' || formatKey === 'h3' || formatKey === 'full');
-    const labelClass = isTextIcon ? 'MDEditor_toolbarButton_label-icon' : 'MDEditor_toolbarButton_label';
-    const className = classNames(
-      'MDEditor_toolbarButton',
-      `MDEditor_toolbarButton--${formatKey}`,
+    const isTextIcon = Icons[formatKey] === undefined;
+    const labelClass = isTextIcon ? 'markmirror__button__label__icon' : 'markmirror__button__label';
+    const className  = classNames(
+      'markmirror__button',
+      `markmirror__button--${formatKey}`,
       {
-        'MDEditor_toolbarButton--pressed': pressed
+        'markmirror__toolbar-button--pressed': pressed
       }
     );
 
     return (
-      <button className={className} onClick={action} title={formatKey}>
-        {isTextIcon ? null : this.renderIcon(Icons[formatKey])}
+      <button className={className} onClick={action} title={BUTTON_TITLES[formatKey]}>
+        {isTextIcon ? null :
+          this.renderIcon(Icons[formatKey])
+        }
         <span className={labelClass}>
           {label}
         </span>
@@ -184,7 +204,7 @@ export default class MarkdownEditor extends React.Component {
     }
 
     return (
-      <div className="MDEditor_toolbar">
+      <div className="markmirror__toolbar">
         {this.renderButton('h1', 'h1')}
         {this.renderButton('h2', 'h2')}
         {this.renderButton('h3', 'h3')}
@@ -201,21 +221,28 @@ export default class MarkdownEditor extends React.Component {
   };
 
   render() {
-    const editorClassName = classNames(
-      'MDEditor_editor',
-      {
-        'MDEditor_editor--focused': this.state.isFocused
-      }
-    );
+    const { value, name, className, ...props } = this.props;
+    const { isFocused } = this.state;
 
     return (
-      <div className="MDEditor" ref={(ref) => { this.rootRef = ref; }} allowFullScreen>
+      <div
+        ref={(ref) => { this.rootRef = ref; }}
+        className={classNames('markmirror', className)}
+        {...objectKeyFilter(props, Markmirror.propTypes)}
+        allowFullScreen
+      >
         {this.renderToolbar()}
-        <div className={editorClassName}>
+        <div className={classNames(
+          'markmirror__editor',
+          {
+            'markmirror__editor--focused': isFocused
+          }
+          )}
+        >
           <textarea
             ref={(ref) => { this.codemirrorRef = ref; }}
-            name={this.props.path}
-            defaultValue={this.props.value}
+            name={name}
+            defaultValue={value}
             autoComplete="off"
           />
         </div>

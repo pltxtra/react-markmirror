@@ -1,9 +1,11 @@
-module.exports = {
-	bold: require('./bold'),
-	italic: require('./italic'),
-	image: require('./image'),
-	link: require('./link'),
-	uList: require('./uList'),
-	oList: require('./oList'),
-	quote: require('./quote')
-};
+/**
+ * @see https://github.com/encharm/Font-Awesome-SVG-PNG/tree/master/black/svg
+ */
+export { default as bold } from './bold';
+export { default as italic } from './italic';
+export { default as image } from './image';
+export { default as link } from './link';
+export { default as uList } from './uList';
+export { default as oList } from './oList';
+export { default as quote } from './quote';
+export { default as full } from './full';

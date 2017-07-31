@@ -1,19 +1,7 @@
 # React Markdown Editor
 A Markdown editor for [React](http://facebook.github.io/react), built with [CodeMirror](https://codemirror.net).
 
-
-## Storybook Demo
 An online demo of the editor is available at https://stories.headzoo.io/react-markmirror.
-
-To build and run the storybook locally, run:
-
-```
-npm install
-npm run storybook
-```
-
-Then open [`localhost:6007`](http://localhost:6007) in a browser.
-
 
 ## Installation
 
@@ -22,12 +10,25 @@ npm install react-markmirror codemirror --save
 ```
 
 
+## Storybook Demo
+To build and run the storybook demo locally, run:
+
+```
+git clone git@github.com:headzoo/react-markmirror.git
+cd react-markmirror
+npm install
+npm run storybook
+```
+
+Then open [`localhost:6007`](http://localhost:6007) in a browser.
+
+
 ## Usage
 
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MDEditor from 'react-markmirror';
+import Markmirror from 'react-markmirror';
 
 class App extends React.Component {
   constructor(props) {
@@ -45,7 +46,7 @@ class App extends React.Component {
     const { code } = this.state;
 
     return (
-      <MDEditor value={code} onChange={this.handleChange} />
+      <Markmirror value={code} onChange={this.handleChange} />
     );
   }
 }
@@ -54,12 +55,17 @@ ReactDOM.render(<App />, document.getElementById('app'));
 ```
 
 ### Properties
+**value={string}**
+The markdown to render.
 
-* `value` `String` the markdown
-* `options` `Object (newValue)` options passed to the CodeMirror instance
-* `onChange` `Function (newValue)` called when a change is made
+**name={string}**
+Name given to the underlying textarea.
 
-See the [CodeMirror API Docs](https://codemirror.net/doc/manual.html#api) for the available options.
+**options={object}**
+Options passed to the CodeMirror instance. See the [CodeMirror API Docs](https://codemirror.net/doc/manual.html#api) for the available options.
+
+**onChange={function}**
+Called when a change is made.
 
 ### License
 MIT. Copyright (c) 2016 Jed Watson.
