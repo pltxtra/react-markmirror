@@ -2,16 +2,17 @@
   "name": "react-md-editor",
   "version": "0.2.2",
   "description": "React Markdown Editor",
-  "main": "lib/MDEditor.js",
+  "main": "dist/index.js",
   "author": "Jed Watson",
-  "homepage": "https://github.com/JedWatson/react-md-editor",
+  "contributors": "Sean Hickey",
+  "homepage": "https://github.com/headzoo/react-md-editor",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JedWatson/react-md-editor.git"
+    "url": "https://github.com/headzoo/react-md-editor.git"
   },
   "bugs": {
-    "url": "https://github.com/JedWatson/react-md-editor/issues"
+    "url": "https://github.com/headzoo/react-md-editor/issues"
   },
   "dependencies": {
     "classnames": "^2.2.5",
@@ -23,32 +24,36 @@
     "prop-types": "^15.5.10"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "happiness": "^7.1.2",
+    "babel-core": "^6.25.0",
+    "babel-eslint": "^7.2.3",
+    "babel-jest": "^20.0.3",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-module-resolver": "^2.7.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "css-loader": "^0.28.4",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.2",
+    "eslint-import-resolver-babel-module": "^3.0.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0",
+    "extract-text-webpack-plugin": "^2.1.2",
+    "file-loader": "^0.11.2",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.5",
     "marked": "^0.3.6",
     "react": "^15.0",
-    "react-component-gulp-tasks": "^0.7.7",
-    "react-dom": "^15.0"
-  },
-  "browserify-shim": {
-    "react": "global:React"
+    "react-dom": "^15.0",
+    "style-loader": "^0.18.2",
+    "webpack": "^3.4.1"
   },
   "scripts": {
-    "build": "gulp clean && NODE_ENV=production gulp build",
-    "examples": "gulp dev:server",
-    "publish:site": "gulp publish:examples",
-    "release": "gulp release",
-    "start": "gulp dev",
+    "build": "webpack -p",
     "test": "echo \"no tests yet\" && exit 0",
-    "lint": "happiness",
-    "watch": "gulp watch:lib"
-  },
-  "happiness": {
-    "ignore": [
-      "**/.publish/**",
-      "**/dist/**",
-      "**/lib/**"
-    ]
+    "lint": "eslint ./src/js --cache --cache-location=.cache/eslint --ext .js,.jsx",
+    "lint:fix": "npm run lint -- --fix"
   },
   "keywords": [
     "react",

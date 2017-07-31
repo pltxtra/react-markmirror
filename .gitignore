@@ -27,5 +27,6 @@ example/dist
 *.ipr
 *.iws
 *.sublime-*
-.idea/
+.idea
+.cache
 *.DS_Store
