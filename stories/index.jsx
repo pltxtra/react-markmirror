@@ -4,6 +4,7 @@ import Marked from 'marked';
 import Markmirror from '../src/js/index';
 import '../node_modules/codemirror/lib/codemirror.css';
 import '../src/less/main.less';
+import './story.less';
 
 const DEFAULT_VALUE = `
 # Header 1
@@ -49,16 +50,29 @@ class Story extends React.Component {
 
     return (
       <div>
-        <div style={{ marginBottom: '1rem' }}>
+        <section>
+          <h2 className="title">Installation</h2>
+          <code>npm install react-markmirror codemirror --save</code>
+          <p>
+            Full documentation is available
+            at <a href="https://github.com/headzoo/react-markmirror">https://github.com/headzoo/react-markmirror</a>.
+          </p>
+        </section>
+        <section>
+          <h2 className="title">Options</h2>
           <select className="markmirror__button" style={{ width: 'auto', padding: '10px 10px' }} onChange={this.handleThemeChange}>
             <option value="light">Light Theme</option>
             <option value="dark">Dark Theme</option>
           </select>
-        </div>
-        <div>
+        </section>
+        <section>
+          <h2 className="title">Editor</h2>
           <Markmirror value={code} theme={theme} onChange={this.handleChange} />
-        </div>
-        <div dangerouslySetInnerHTML={{ __html: Marked(code) }} />
+        </section>
+        <section>
+          <h2 className="title">Preview</h2>
+          <div dangerouslySetInnerHTML={{ __html: Marked(code) }} />
+        </section>
       </div>
     );
   }
