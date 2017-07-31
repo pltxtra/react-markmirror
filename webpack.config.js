@@ -6,7 +6,7 @@ const config = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.js',
-    library: 'react-moment',
+    library: 'react-markmirror',
     libraryTarget: 'umd'
   },
   externals: [
@@ -54,7 +54,7 @@ const config = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin('md-editor.css')
+    new ExtractTextPlugin('react-markmirror.css')
   ]
 };
 
