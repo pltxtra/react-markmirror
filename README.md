@@ -10,6 +10,7 @@ An online demo of the editor is available at https://stories.headzoo.io/react-ma
 * [Example](#example)
 * [Properties](#properties)
 * [Themes](docs/themes.md)
+* [Styling](docs/styling.md)
 * [Button Customizing](docs/button.md)
 * [Toolbar Customizing](docs/toolbar.md)
 * [Storybook](docs/storybook.md)
