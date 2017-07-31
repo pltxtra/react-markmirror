@@ -1,4 +1,5 @@
-# React Markdown Editor
+# React Markmirror
+==================
 A Markdown editor for [React](http://facebook.github.io/react), built with [CodeMirror](https://codemirror.net).
 
 An online demo of the editor is available at https://stories.headzoo.io/react-markmirror.
