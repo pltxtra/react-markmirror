@@ -62,7 +62,7 @@ The markdown text to render.
 Name given to the textarea.
 
 **theme={string}**  
-The styling theme. Possible values are "light" and "dark".
+The styling theme. See the [theme docs](docs/themes.md) for more information.
 
 **tabSize={number}**  
 Number of spaces that make up a tab.
