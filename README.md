@@ -2,57 +2,57 @@
 
 A Markdown Editor for [React.js](http://facebook.github.io/react), built with [CodeMirror](https://codemirror.net).
 
-**This is a work in progress.** Format application and removal is not very robust, some formats are missing.
 
-
-## Demo & Examples
-
-Live demo: [JedWatson.github.io/react-md-editor](http://JedWatson.github.io/react-md-editor)
+## Storybook Demo
 
 To build the examples locally, run:
 
 ```
 npm install
-npm start
+npm run storybook
 ```
 
-Then open [`localhost:8000`](http://localhost:8000) in a browser.
+Then open [`localhost:6007`](http://localhost:6007) in a browser.
 
 
 ## Installation
 
-The easiest way to use codemirror is to install it from NPM and include it in your own React build process (using [Browserify](http://browserify.org), [Webpack](http://webpack.github.io/), etc).
-
-You can also use the standalone build by including `dist/codemirror.js` in your page. If you use this, make sure you have already included React, and it is available as a global variable.
+The easiest way to use codemirror is to install it from NPM and include it in your own React build process using [Webpack](http://webpack.github.io/).
 
 ```
-npm install codemirror --save
+npm install react-md-editor codemirror --save
 ```
 
 
 ## Usage
 
 ```js
-var React = require('react'),
-	Editor = require('react-md-editor');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import MDEditor from 'react-md-editor';
 
-var App = React.createClass({
-	getInitialState: function() {
-		return {
-			code: "# Markdown"
-		};
-	},
-	updateCode: function(newCode) {
-		this.setState({
-			code: newCode
-		});
-	},
-	render: function() {
-		return <Editor value={this.state.code} onChange={this.updateCode} />
-	}
-});
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      code: ''
+    };
+  }
 
-React.render(<App />, document.getElementById('app'));
+  handleChange = (code) => {
+    this.setState({ code });
+  };
+
+  render() {
+    const { code } = this.state;
+
+    return (
+      <MDEditor value={code} onChange={this.handleChange} />
+    );
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById('app'));
 ```
 
 ### Properties
