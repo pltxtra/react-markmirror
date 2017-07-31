@@ -80,7 +80,7 @@ var getTokenTypes = (token, previousTokens) => {
   return tokenTypes;
 };
 
-export function applyFormat(cm, key) {
+export function execCommand(cm, key) {
   const cs = getCursorState(cm);
   const format = FORMATS[key];
   operations[format.type + (cs[key] ? 'Remove' : 'Apply')](cm, format);

@@ -3,27 +3,23 @@ A Markdown editor for [React](http://facebook.github.io/react), built with [Code
 
 An online demo of the editor is available at https://stories.headzoo.io/react-markmirror.
 
+* [Installation](#installation)
+* [Example](#example)
+* [Properties](#properties)
+* [Button Customizing](docs/button.md)
+* [Toolbar Customizing](docs/toolbar.md)
+* [Storybook](docs/storybook.md)
+* [License](#license)
+
 ## Installation
+The module is installed using npm, and sets 'react' and 'prop-types' as peer dependencies. Meaning they must be installed separately.
 
 ```
-npm install react-markmirror react react-dom prop-types --save
+npm install react-markmirror react prop-types --save
 ```
 
 
-## Storybook Demo
-To build and run the storybook demo locally, run:
-
-```
-git clone git@github.com:headzoo/react-markmirror.git
-cd react-markmirror
-npm install
-npm run storybook
-```
-
-Then open [`localhost:6007`](http://localhost:6007) in a browser.
-
-
-## Usage
+## Example
 
 ```js
 import React from 'react';
@@ -43,10 +39,8 @@ class App extends React.Component {
   };
 
   render() {
-    const { code } = this.state;
-
     return (
-      <Markmirror value={code} onChange={this.handleChange} />
+      <Markmirror value={this.state.code} onChange={this.handleChange} />
     );
   }
 }
@@ -56,26 +50,39 @@ ReactDOM.render(<App />, document.getElementById('app'));
 
 
 ### Properties
-**value={string}**
+**value={string}**  
 The markdown text to render.
 
-**name={string}**
+**name={string}**  
 Name given to the textarea.
 
-**theme={string}**
+**theme={string}**  
 The styling theme. Possible values are "light" and "dark".
 
-**options={object}**
-Options passed to the CodeMirror instance. See the [CodeMirror API Docs](https://codemirror.net/doc/manual.html#api) for the available options.
+**tabSize={number}**  
+Number of spaces that make up a tab.
 
-**onChange={function}**
+**indentWithTabs={boolean}**  
+True to use tabs, false to use spaces.
+
+**lineNumbers={boolean}**  
+True to display line numbers.
+
+**lineWrapping={boolean}**  
+True to wrap long lines.
+
+**codemirrorOptions={object}**  
+Options passed to the internal CodeMirror instance. See the [CodeMirror API Docs](https://codemirror.net/doc/manual.html#api) for the available options.
+
+**onChange={function}**  
 Called when a change is made.
 
-**renderButton={function}**
-Renders each toolbar button.
+**renderButton={function}**  
+Renders each toolbar button. See the [button customizing docs](docs/button.md) for more information.
 
-**renderToolbar={function}**
-Renders the toolbar.
+**renderToolbar={function}**  
+Renders the toolbar. See the [toolbar customizing docs](docs/toolbar.md) for more information.
+
 
 ### License
 MIT. Copyright (c) 2016 Jed Watson.

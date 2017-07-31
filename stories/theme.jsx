@@ -1,7 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import Marked from 'marked';
-import Markmirror from '../src/js/index';
+import Markmirror from '../src/js/components/markmirror';
 import { DEFAULT_VALUE } from './const';
 import './story.less';
 
@@ -28,7 +27,6 @@ class Story extends React.Component {
     return (
       <div>
         <section>
-          <h2 className="title">Options</h2>
           <select
             className="markmirror__button"
             style={{ width: 'auto', padding: '10px 10px' }}
@@ -39,12 +37,7 @@ class Story extends React.Component {
           </select>
         </section>
         <section>
-          <h2 className="title">Editor</h2>
           <Markmirror value={code} theme={theme} onChange={this.handleChange} />
-        </section>
-        <section>
-          <h2 className="title">Preview</h2>
-          <div dangerouslySetInnerHTML={{ __html: Marked(code) }} />
         </section>
       </div>
     );

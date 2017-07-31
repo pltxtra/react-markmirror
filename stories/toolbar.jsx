@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import Markmirror from '../src/js/index';
+import Markmirror from '../src/js/components/markmirror';
 import { DEFAULT_VALUE } from './const';
 import './story.less';
 
@@ -20,13 +20,13 @@ class Story extends React.Component {
     alert('Document saved!'); // eslint-disable-line no-alert
   };
 
-  renderToolbar = markmirror => (
+  renderToolbar = (markmirror, renderButton) => (
     <div className="my-app__toolbar">
-      {markmirror.renderButton('bold', 'b')}
-      {markmirror.renderButton('italic', 'i')}
-      {markmirror.renderButton('oList', 'ol')}
-      {markmirror.renderButton('uList', 'ul')}
-      {markmirror.renderButton('quote', 'q')}
+      {renderButton('bold')}
+      {renderButton('italic')}
+      {renderButton('oList')}
+      {renderButton('uList')}
+      {renderButton('quote')}
       <button type="button" className="markmirror__button" onClick={this.handleSave}>
         <span className="markmirror__button__label__icon">
           Save

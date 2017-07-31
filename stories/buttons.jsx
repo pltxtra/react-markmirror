@@ -1,7 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import Markmirror from '../src/js/index';
+import Markmirror from '../src/js/components/markmirror';
 import { DEFAULT_VALUE } from './const';
+import '../node_modules/bootstrap/less/bootstrap.less';
 import './story.less';
 
 class Story extends React.Component {
@@ -16,15 +17,15 @@ class Story extends React.Component {
     this.setState({ code });
   };
 
-  renderButton = (markmirror, formatKey, label, action, pressed) => {
-    let className = 'my-app__button';
+  renderButton = (markmirror, command, handler, pressed) => {
+    let className = 'btn btn-sm btn-primary';
     if (pressed) {
-      className = `${className} my-app__button--pressed`;
+      className = `${className} active`;
     }
 
     return (
-      <button type="button" className={className} onClick={action} title={formatKey}>
-        {formatKey}
+      <button type="button" className={className} onClick={handler}>
+        {command}
       </button>
     );
   };
