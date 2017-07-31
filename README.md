@@ -42,7 +42,10 @@ class App extends React.Component {
 
   render() {
     return (
-      <Markmirror value={this.state.code} onChange={this.handleChange} />
+      <Markmirror
+        value={this.state.code}
+        onChange={this.handleChange}
+      />
     );
   }
 }
