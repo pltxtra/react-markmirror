@@ -3,7 +3,6 @@ import { storiesOf } from '@storybook/react';
 import Marked from 'marked';
 import Markmirror from '../src/js/components/markmirror';
 import { DEFAULT_VALUE } from './const';
-import './story.less';
 
 class Story extends React.Component {
   constructor(props) {

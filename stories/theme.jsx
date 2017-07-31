@@ -2,7 +2,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import Markmirror from '../src/js/components/markmirror';
 import { DEFAULT_VALUE } from './const';
-import './story.less';
 
 class Story extends React.Component {
   constructor(props) {
@@ -32,8 +31,10 @@ class Story extends React.Component {
             style={{ width: 'auto', padding: '10px 10px' }}
             onChange={this.handleThemeChange}
           >
-            <option value="light">Light Theme</option>
-            <option value="dark">Dark Theme</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="ambiance">Ambiance</option>
+            <option value="elegant">Elegant</option>
           </select>
         </section>
         <section>

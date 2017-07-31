@@ -2,8 +2,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import Markmirror from '../src/js/components/markmirror';
 import { DEFAULT_VALUE } from './const';
-import '../node_modules/bootstrap/less/bootstrap.less';
-import './story.less';
 
 class Story extends React.Component {
   constructor(props) {

@@ -13,6 +13,8 @@ import { objectKeyFilter } from '../utils/objects';
 import '../../../node_modules/codemirror/lib/codemirror.css';
 import '../../less/main.less';
 
+const THEMES = ['light', 'dark'];
+
 export default class Markmirror extends React.Component {
   static propTypes = {
     /**
@@ -101,37 +103,59 @@ export default class Markmirror extends React.Component {
    * Invoked immediately after a component is mounted.
    */
   componentDidMount() {
-    const options = Object.assign({
-      mode:           'markdown',
-      lineNumbers:    this.props.lineNumbers,
-      lineWrapping:   this.props.lineWrapping,
-      indentWithTabs: this.props.indentWithTabs,
-      tabSize:        this.props.tabSize
-    }, this.props.codemirrorOptions);
-    this.codemirror = Codemirror.fromTextArea(this.codemirrorRef, options);
-    this.codemirror.on('change', this.handleCodemirrorChange);
-    this.codemirror.on('focus', this.handleCodemirrorFocus);
-    this.codemirror.on('blur', this.handleCodemirrorBlur);
-    this.codemirror.on('cursorActivity', this.handleCodemirrorCursorActivity);
-
+    this.setupCodemirror();
     document.addEventListener('fullscreenchange', this.handleFullScreen);
     document.addEventListener('webkitfullscreenchange', this.handleFullScreen);
     document.addEventListener('mozfullscreenchange', this.handleFullScreen);
     document.addEventListener('MSFullscreenChange', this.handleFullScreen);
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.theme !== this.props.theme) {
+      this.setupCodemirror();
+    }
+  }
+
   /**
    * Invoked immediately before a component is unmounted and destroyed
    */
   componentWillUnmount() {
-    if (this.codemirror) {
-      this.codemirror.toTextArea();
-    }
-
+    this.destroyCodemirror();
     document.removeEventListener('fullscreenchange', this.handleFullScreen);
     document.removeEventListener('webkitfullscreenchange', this.handleFullScreen);
     document.removeEventListener('mozfullscreenchange', this.handleFullScreen);
     document.removeEventListener('MSFullscreenChange', this.handleFullScreen);
+  }
+
+  /**
+   * Initializes the codemirror instance
+   */
+  setupCodemirror() {
+    this.destroyCodemirror();
+    const options = Object.assign({
+      mode:           'markdown',
+      theme:          THEMES.indexOf(this.props.theme) !== -1 ? 'default' : this.props.theme,
+      lineNumbers:    this.props.lineNumbers,
+      lineWrapping:   this.props.lineWrapping,
+      indentWithTabs: this.props.indentWithTabs,
+      tabSize:        this.props.tabSize
+    }, this.props.codemirrorOptions);
+
+    this.codemirror = Codemirror.fromTextArea(this.codemirrorRef, options);
+    this.codemirror.on('change', this.handleCodemirrorChange);
+    this.codemirror.on('focus', this.handleCodemirrorFocus);
+    this.codemirror.on('blur', this.handleCodemirrorBlur);
+    this.codemirror.on('cursorActivity', this.handleCodemirrorCursorActivity);
+  }
+
+  /**
+   * Destroys the codemirror instance
+   */
+  destroyCodemirror() {
+    if (this.codemirror) {
+      this.codemirror.toTextArea();
+      this.codemirror = null;
+    }
   }
 
   /**
