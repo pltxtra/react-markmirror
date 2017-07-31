@@ -6,7 +6,7 @@ An online demo of the editor is available at https://stories.headzoo.io/react-ma
 ## Installation
 
 ```
-npm install react-markmirror codemirror --save
+npm install react-markmirror react react-dom prop-types --save
 ```
 
 
@@ -70,6 +70,12 @@ Options passed to the CodeMirror instance. See the [CodeMirror API Docs](https:/
 
 **onChange={function}**
 Called when a change is made.
+
+**renderButton={function}**
+Renders each toolbar button.
+
+**renderToolbar={function}**
+Renders the toolbar.
 
 ### License
 MIT. Copyright (c) 2016 Jed Watson.

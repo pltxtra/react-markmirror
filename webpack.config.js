@@ -1,5 +1,4 @@
 const path = require('path');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const config = {
   entry: './src/js/index.jsx',
@@ -34,15 +33,12 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.less$/i,
-        exclude: /node_modules/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            'css-loader',
-            'less-loader'
-          ]
-        })
+        test: /\.less$/,
+        loaders: ["style-loader", "css-loader", "less-loader"]
+      },
+      {
+        test: /\.css$/,
+        loaders: ["style-loader", "css-loader"]
       },
       {
         test: /\.jsx?$/i,
@@ -52,10 +48,7 @@ const config = {
         }
       }
     ]
-  },
-  plugins: [
-    new ExtractTextPlugin('react-markmirror.css')
-  ]
+  }
 };
 
 module.exports = config;

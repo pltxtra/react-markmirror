@@ -9,6 +9,7 @@ import 'codemirror/addon/edit/continuelist';
 import * as Icons from '../icons';
 import { getCursorState, applyFormat } from './format';
 import { objectKeyFilter } from './utils/objects';
+import '../../node_modules/codemirror/lib/codemirror.css';
 import '../less/main.less';
 
 const BUTTON_TITLES = {
@@ -170,12 +171,16 @@ export default class Markmirror extends React.Component {
 
   renderButton = (formatKey, label, action) => {
     if (!action) {
-      action = this.toggleFormat.bind(this, formatKey);
+      if (formatKey === 'full') {
+        action = this.toggleFullScreen;
+      } else {
+        action = this.toggleFormat.bind(this, formatKey);
+      }
     }
 
     const pressed = (this.state.cs[formatKey] || (formatKey === 'full' && this.state.isFullScreen));
     if (this.props.renderButton) {
-      return this.props.renderButton(formatKey, label, action, pressed);
+      return this.props.renderButton(this, formatKey, label, action, pressed);
     }
 
     const isTextIcon = Icons[formatKey] === undefined;
@@ -202,7 +207,7 @@ export default class Markmirror extends React.Component {
 
   renderToolbar = () => {
     if (this.props.renderToolbar) {
-      return this.props.renderToolbar(this.state.cs);
+      return this.props.renderToolbar(this);
     }
 
     return (
@@ -217,7 +222,7 @@ export default class Markmirror extends React.Component {
         {this.renderButton('quote', 'q')}
         {this.renderButton('link', 'a')}
         {this.renderButton('image', 'img')}
-        {this.renderButton('full', 'full', this.toggleFullScreen)}
+        {this.renderButton('full', 'full')}
       </div>
     );
   };
@@ -229,7 +234,7 @@ export default class Markmirror extends React.Component {
     return (
       <div
         ref={(ref) => { this.rootRef = ref; }}
-        className={classNames('markmirror', `markmirror__theme--${theme}`, className)}
+        className={classNames('markmirror', `markmirror--${theme}-theme`, className)}
         {...objectKeyFilter(props, Markmirror.propTypes)}
         allowFullScreen
       >
