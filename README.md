@@ -2,6 +2,8 @@ React Markmirror
 ==================
 A Markdown editor for [React](http://facebook.github.io/react), built with [CodeMirror](https://codemirror.net).
 
+![Standard screenshot](docs/images/standard.png)
+
 An online demo of the editor is available at https://stories.headzoo.io/react-markmirror.
 
 * [Installation](#installation)
