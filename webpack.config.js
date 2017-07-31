@@ -2,7 +2,7 @@ const path = require('path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const config = {
-  entry: './src/js/index.js',
+  entry: './src/js/index.jsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.js'
