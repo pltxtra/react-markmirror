@@ -1,4 +1,4 @@
-# React Markmirror
+React Markmirror
 ==================
 A Markdown editor for [React](http://facebook.github.io/react), built with [CodeMirror](https://codemirror.net).
 
