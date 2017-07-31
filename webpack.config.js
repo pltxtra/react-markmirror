@@ -1,7 +1,7 @@
 const path = require('path');
 
 const config = {
-  entry: './src/js/index.jsx',
+  entry: './src/js/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.js',
@@ -53,6 +53,9 @@ const config = {
       { test: /\.[ot]tf(\?v=\d+.\d+.\d+)?$/, use: 'url-loader?limit=10000&mimetype=application/octet-stream' },
       { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: 'url-loader?limit=10000&mimetype=image/svg+xml' }
     ]
+  },
+  resolve: {
+    extensions: ['.js', '.jsx']
   }
 };
 
