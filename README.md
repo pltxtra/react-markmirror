@@ -5,7 +5,9 @@ A Markdown Editor for [React.js](http://facebook.github.io/react), built with [C
 
 ## Storybook Demo
 
-To build the examples locally, run:
+An online demo of the editor is available at https://stories.headzoo.io/react-md-editor.
+
+To build and run the storybook locally, run:
 
 ```
 npm install

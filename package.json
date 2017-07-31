@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.0.1",
+    "@storybook/addon-options": "^3.1.6",
     "@storybook/react": "3.0.1",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
@@ -54,6 +55,7 @@
   "scripts": {
     "build": "webpack -p",
     "storybook": "start-storybook -p 6007",
+    "storybook:build": "build-storybook -o stories/build",
     "test": "echo \"no tests yet\" && exit 0",
     "lint": "eslint ./src/js --cache --cache-location=.cache/eslint --ext .js,.jsx",
     "lint:fix": "npm run lint -- --fix"
