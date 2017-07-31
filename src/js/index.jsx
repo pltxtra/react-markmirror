@@ -28,8 +28,9 @@ const BUTTON_TITLES = {
 export default class Markmirror extends React.Component {
   static propTypes = {
     value:         PropTypes.string,
-    options:       PropTypes.object,
     name:          PropTypes.string,
+    theme:         PropTypes.string,
+    options:       PropTypes.object,
     className:     PropTypes.string,
     onChange:      PropTypes.func,
     renderToolbar: PropTypes.func,
@@ -37,9 +38,10 @@ export default class Markmirror extends React.Component {
   };
 
   static defaultProps = {
-    options:       {},
     name:          '',
     value:         '',
+    theme:         'light',
+    options:       {},
     className:     '',
     renderToolbar: null,
     renderButton:  null,
@@ -221,13 +223,13 @@ export default class Markmirror extends React.Component {
   };
 
   render() {
-    const { value, name, className, ...props } = this.props;
+    const { value, name, theme, className, ...props } = this.props;
     const { isFocused } = this.state;
 
     return (
       <div
         ref={(ref) => { this.rootRef = ref; }}
-        className={classNames('markmirror', className)}
+        className={classNames('markmirror', `markmirror__theme--${theme}`, className)}
         {...objectKeyFilter(props, Markmirror.propTypes)}
         allowFullScreen
       >

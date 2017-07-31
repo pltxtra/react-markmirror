@@ -56,10 +56,13 @@ ReactDOM.render(<App />, document.getElementById('app'));
 
 ### Properties
 **value={string}**
-The markdown to render.
+The markdown text to render.
 
 **name={string}**
-Name given to the underlying textarea.
+Name given to the textarea.
+
+**theme={string}**
+The styling theme. Possible values are "light" and "dark".
 
 **options={object}**
 Options passed to the CodeMirror instance. See the [CodeMirror API Docs](https://codemirror.net/doc/manual.html#api) for the available options.
