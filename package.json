@@ -65,7 +65,8 @@
     "test": "jest tests/**/*.test.js",
     "test:server": "babel-node tests/server.js",
     "lint": "eslint ./src/js --cache --cache-location=.cache/eslint --ext .js,.jsx",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "publish": "./publish.sh"
   },
   "keywords": [
     "react",
