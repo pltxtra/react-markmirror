@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import Toolbar from './toolbar';
 import Button from './button';
 import { THEMES } from '../const';
-import { getCursorState, execCommand } from '../format';
+import { getCursorState, execCommand } from '../commands';
 import { objectKeyFilter, objectForEach, objectAssign } from '../utils/objects';
 import handlerDataURI from '../handlers/handlerDataURI';
 import handlerUpload from '../handlers/handlerUpload';
