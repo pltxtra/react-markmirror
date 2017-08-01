@@ -1,19 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Codemirror from 'codemirror';
+import CodeMirror from 'codemirror';
 import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/addon/edit/continuelist';
 import classNames from 'classnames';
 import Toolbar from './toolbar';
 import Button from './button';
+import { THEMES } from '../const';
 import { getCursorState, execCommand } from '../format';
-import { objectKeyFilter } from '../utils/objects';
+import { objectKeyFilter, objectForEach, objectAssign } from '../utils/objects';
+import handlerDataURI from '../handlers/handlerDataURI';
+import handlerUpload from '../handlers/handlerUpload';
 
 import '../../../node_modules/codemirror/lib/codemirror.css';
 import '../../less/main.less';
-
-const THEMES = ['light', 'dark'];
 
 export default class Markmirror extends React.Component {
   static propTypes = {
@@ -50,6 +51,10 @@ export default class Markmirror extends React.Component {
      */
     codemirrorOptions: PropTypes.object,
     /**
+     * Event handlers passed to the internal CodeMirror instance.
+     */
+    codemirrorEvents:  PropTypes.object,
+    /**
      * Class passed to the root element.
      */
     className:         PropTypes.string,
@@ -57,6 +62,10 @@ export default class Markmirror extends React.Component {
      * Called when a change is made.
      */
     onChange:          PropTypes.func,
+    /**
+     * Called when files are dropped on the editor.
+     */
+    onFiles:           PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.string]),
     /**
      * Renders each toolbar button.
      */
@@ -76,11 +85,16 @@ export default class Markmirror extends React.Component {
     lineNumbers:       false,
     lineWrapping:      true,
     codemirrorOptions: {},
+    codemirrorEvents:  {},
     className:         '',
     renderToolbar:     null,
     renderButton:      null,
+    onFiles:           null,
     onChange:          () => {}
   };
+
+  static handlerDataURI = handlerDataURI;
+  static handlerUpload  = handlerUpload;
 
   /**
    * Constructor
@@ -89,11 +103,12 @@ export default class Markmirror extends React.Component {
    */
   constructor(props) {
     super(props);
+
     this.rootRef       = null;
     this.codemirrorRef = null;
     this.codemirror    = null;
-    this.state = {
-      cs:           {},
+    this.state         = {
+      cursor:       {},
       isFocused:    false,
       isFullScreen: false
     };
@@ -132,20 +147,24 @@ export default class Markmirror extends React.Component {
    */
   setupCodemirror() {
     this.destroyCodemirror();
-    const options = Object.assign({
+    const options = objectAssign({
       mode:           'markdown',
       theme:          THEMES.indexOf(this.props.theme) !== -1 ? 'default' : this.props.theme,
+      tabSize:        this.props.tabSize,
       lineNumbers:    this.props.lineNumbers,
       lineWrapping:   this.props.lineWrapping,
-      indentWithTabs: this.props.indentWithTabs,
-      tabSize:        this.props.tabSize
+      indentWithTabs: this.props.indentWithTabs
     }, this.props.codemirrorOptions);
 
-    this.codemirror = Codemirror.fromTextArea(this.codemirrorRef, options);
+    this.codemirror = CodeMirror.fromTextArea(this.codemirrorRef, options);
     this.codemirror.on('change', this.handleCodemirrorChange);
     this.codemirror.on('focus', this.handleCodemirrorFocus);
     this.codemirror.on('blur', this.handleCodemirrorBlur);
+    this.codemirror.on('drop', this.handleCodemirrorDrop);
     this.codemirror.on('cursorActivity', this.handleCodemirrorCursorActivity);
+    objectForEach(this.props.codemirrorEvents, (handler, event) => {
+      this.codemirror.on(event, handler);
+    });
   }
 
   /**
@@ -171,10 +190,10 @@ export default class Markmirror extends React.Component {
    * Executes the given command
    *
    * @param {String} command
-   * @param {Event}  e
+   * @param {Event}  [e]
    */
   execCommand = (command, e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     execCommand(this.codemirror, command);
   };
 
@@ -208,33 +227,83 @@ export default class Markmirror extends React.Component {
   };
 
   /**
-   * Bound to the Codemirror 'focus' event
+   * Bound to the CodeMirror 'focus' event
    */
   handleCodemirrorFocus = () => {
     this.setState({ isFocused: true });
   };
 
   /**
-   * Bound to the Codemirror 'blur' event
+   * Bound to the CodeMirror 'blur' event
    */
   handleCodemirrorBlur = () => {
     this.setState({ isFocused: false });
   };
 
   /**
-   * Bound to the Codemirror 'cursorActivity' event
+   * Bound to the CodeMirror 'cursorActivity' event
    */
   handleCodemirrorCursorActivity = () => {
-    this.setState({ cs: getCursorState(this.codemirror) });
+    this.setState({ cursor: getCursorState(this.codemirror) });
   };
 
   /**
-   * Bound to the Codemirror 'change' event
-   *
-   * @param {*} doc
+   * Bound to the CodeMirror 'change' event
    */
-  handleCodemirrorChange = (doc) => {
-    this.props.onChange(doc.getValue());
+  handleCodemirrorChange = () => {
+    this.props.onChange(this.codemirror.getValue());
+  };
+
+  /**
+   * Bound to the CodeMirror 'drop' event
+   *
+   * @param {CodeMirror} codemirror
+   * @param {Event} e
+   */
+  handleCodemirrorDrop = (codemirror, e) => {
+    e.preventDefault();
+
+    const files = [];
+    const data  = e.dataTransfer;
+    if (data.items) {
+      for (let i = 0; i < data.items.length; i++) {
+        files.push(data.items[i].getAsFile());
+      }
+    } else {
+      for (let i = 0; i < data.files; i++) {
+        files.push(data.files[i]);
+      }
+    }
+
+    this.handleFiles(files);
+  };
+
+  /**
+   * Uploads one or more files
+   *
+   * @param {File[]} files
+   */
+  handleFiles = (files) => {
+    let { onFiles } = this.props;
+    if (!onFiles) {
+      return;
+    }
+    if (typeof onFiles !== 'function') {
+      onFiles = handlerUpload(onFiles);
+    }
+
+    for (let i = 0; i < files.length; i++) {
+      onFiles(files[i])
+        .then((result) => {
+          if (result.type === 'image') {
+            this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
+          } else if (result.type === 'link') {
+            this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
+          }
+        }).catch((err) => {
+          this.codemirror.replaceSelection(`Upload error: ${err}`);
+        });
+    }
   };
 
   /**
@@ -264,7 +333,7 @@ export default class Markmirror extends React.Component {
    * @returns {XML}
    */
   renderButton = (command, handler) => {
-    const pressed = (this.state.cs[command] || (command === 'full' && this.state.isFullScreen));
+    const pressed = (this.state.cursor[command] || (command === 'full' && this.state.isFullScreen));
     if (!handler) {
       if (command === 'full') {
         handler = this.toggleFullScreen;

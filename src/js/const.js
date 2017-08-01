@@ -25,3 +25,5 @@ export const BUTTON_LABELS = {
   image:  'I',
   full:   'F'
 };
+
+export const THEMES = ['light', 'dark'];

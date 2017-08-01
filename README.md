@@ -1,20 +1,27 @@
 React Markmirror
 ==================
-A Markdown editor for [React](http://facebook.github.io/react), built with [CodeMirror](https://codemirror.net).
+A WYSIWYG markdown editor for [React](http://facebook.github.io/react) which uses [CodeMirror](https://codemirror.net).
 
-![Standard screenshot](docs/images/standard.png)
+An demo is available at https://stories.headzoo.io/react-markmirror.
 
-An online demo of the editor is available at https://stories.headzoo.io/react-markmirror.
-
+* [Features](#features)
 * [Installation](#installation)
 * [Example](#example)
-* [Properties](#properties)
+* [Props](docs/props.md)
+* [Methods](docs/methods.md)
 * [Themes](docs/themes.md)
 * [Styling](docs/styling.md)
 * [Button Customizing](docs/button.md)
 * [Toolbar Customizing](docs/toolbar.md)
+* [Dropping and Uploading Files](docs/uploading.md)
 * [Storybook](docs/storybook.md)
-* [License](#license)
+
+## Features
+
+![Standard screenshot](docs/images/standard.png)
+
+* Syntax highlighting with themes.
+* Drag and drop file uploading.
 
 ## Installation
 The module is installed using npm, and sets 'react' and 'prop-types' as peer dependencies. Meaning they must be installed separately.
@@ -55,42 +62,3 @@ class App extends React.Component {
 
 ReactDOM.render(<App />, document.getElementById('app'));
 ```
-
-
-### Properties
-**value={string}**  
-The markdown text to render.
-
-**name={string}**  
-Name given to the textarea.
-
-**theme={string}**  
-The styling theme. See the [theme docs](docs/themes.md) for more information.
-
-**tabSize={number}**  
-Number of spaces that make up a tab.
-
-**indentWithTabs={boolean}**  
-True to use tabs, false to use spaces.
-
-**lineNumbers={boolean}**  
-True to display line numbers.
-
-**lineWrapping={boolean}**  
-True to wrap long lines.
-
-**codemirrorOptions={object}**  
-Options passed to the internal CodeMirror instance. See the [CodeMirror API Docs](https://codemirror.net/doc/manual.html#api) for the available options.
-
-**onChange={function}**  
-Called when a change is made.
-
-**renderButton={function}**  
-Renders each toolbar button. See the [button customizing docs](docs/button.md) for more information.
-
-**renderToolbar={function}**  
-Renders the toolbar. See the [toolbar customizing docs](docs/toolbar.md) for more information.
-
-
-### License
-MIT. Copyright (c) 2016 Jed Watson.

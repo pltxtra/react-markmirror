@@ -32,3 +32,49 @@ export function objectKeyFilter(obj1, obj2) {
 
   return newProps;
 }
+
+/**
+ * Iterates over an object
+ *
+ * Calls the given callback function with each value and key in the object. The callback
+ * receives the value as the first argument, and key as the second.
+ *
+ * @param {object} obj The object to iterate over
+ * @param {function} cb The callback function
+ * @return {object}
+ */
+export function objectForEach(obj, cb) {
+  const newObj = Object.assign({}, obj);
+  for (const key of Object.keys(newObj)) {
+    cb(newObj[key], key);
+  }
+
+  return newObj;
+}
+
+/**
+ * Object.assign() polyfill
+ *
+ * @param target
+ * @param varArgs
+ * @returns {*}
+ */
+export function objectAssign(target, ...varArgs) {
+  if (target == null) {
+    throw new TypeError('Cannot convert undefined or null to object');
+  }
+
+  const to = Object(target);
+  for (let index = 0; index < varArgs.length; index++) {
+    const nextSource = varArgs[index];
+    if (nextSource != null) {
+      for (let nextKey in nextSource) { // eslint-disable-line
+        if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+          to[nextKey] = nextSource[nextKey];
+        }
+      }
+    }
+  }
+
+  return to;
+}
