@@ -1,6 +1,6 @@
 {
   "name": "react-markmirror",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "React Markdown Editor",
   "main": "dist/index.js",
   "author": "Jed Watson",
