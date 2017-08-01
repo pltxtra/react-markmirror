@@ -1,13 +1,14 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import Marked from 'marked';
 import Markmirror from '../src/js/components/markmirror';
-import { DEFAULT_VALUE } from './const';
 
 class Story extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      code: DEFAULT_VALUE.trim()
+      code:     'Drag and drop images files onto the editor or click the upload button.\r\n\r\n',
+      progress: 0
     };
   }
 
@@ -15,20 +16,33 @@ class Story extends React.Component {
     this.setState({ code });
   };
 
+  handleProgress = (progress) => {
+    this.setState({ progress });
+  };
+
   render() {
-    const { code } = this.state;
+    const { code, progress } = this.state;
 
     return (
       <div>
-        <p>
-          Drag and drop images files onto the editor.
-        </p>
         <section>
           <Markmirror
             value={code}
             onChange={this.handleChange}
-            onDrop={Markmirror.handlerDataURI}
+            acceptedFileTypes={['image/jpg', 'image/gif', 'image/png']}
+            onFiles={Markmirror.handlerUpload({
+              url:        'http://localhost:3030/upload',
+              onProgress: this.handleProgress
+            })}
           />
+        </section>
+        <section style={{ marginBottom: 20 }}>
+          <div className="demo-progress">
+            <div className="demo-progress-bar" style={{ width: `${progress}%` }} />
+          </div>
+        </section>
+        <section>
+          <div dangerouslySetInnerHTML={{ __html: Marked(code) }} />
         </section>
       </div>
     );

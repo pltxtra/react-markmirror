@@ -124,13 +124,15 @@ export default function handlerUpload(settings) {
       objectForEach(options.formData, (value, key) => {
         formData.append(key, value);
       });
-      formData.append(options.fileFieldName, file);
+      formData.append(options.fileFieldName, file, file.name);
+
       options.headers.Accept = 'application/json';
       objectForEach(options.headers, (value, key) => {
         xhr.setRequestHeader(key, value);
       });
 
       options.onSend(xhr, file);
+      options.onProgress(0);
       xhr.send(formData);
     })
   );

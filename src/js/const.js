@@ -9,7 +9,8 @@ export const BUTTON_TITLES = {
   quote:  'Quote',
   link:   'Link',
   image:  'Image',
-  full:   'Fullscreen'
+  full:   'Fullscreen',
+  upload: 'Upload'
 };
 
 export const BUTTON_LABELS = {
@@ -23,7 +24,8 @@ export const BUTTON_LABELS = {
   quote:  'Q',
   link:   'L',
   image:  'I',
-  full:   'F'
+  full:   'F',
+  upload: 'U'
 };
 
 export const THEMES = ['light', 'dark'];

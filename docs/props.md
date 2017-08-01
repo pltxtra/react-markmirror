@@ -22,6 +22,13 @@ The styling theme. See the [theme docs](docs/themes.md) for more information.
 <Markmirror theme="light" />
 ```
 
+**readOnly={boolean}**  
+Set to true to make the editor read only.
+
+```jsx
+<Markmirror readOnly={true} />
+```
+
 **tabSize={number}**  
 Number of spaces that make up a tab.
 
@@ -48,6 +55,13 @@ True to wrap long lines.
 
 ```jsx
 <Markmirror lineWrapping={false} />
+```
+
+**acceptedFileTypes={array}**  
+List of mime types for files which may be dropped/uploaded.
+
+```jsx
+<Markmirror acceptedFileTypes={['image/jpg', 'image/gif', 'image/png']} />
 ```
 
 **codemirrorOptions={object}**  

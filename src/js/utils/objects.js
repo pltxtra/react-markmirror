@@ -45,7 +45,7 @@ export function objectKeyFilter(obj1, obj2) {
  */
 export function objectForEach(obj, cb) {
   const newObj = Object.assign({}, obj);
-  for (const key of Object.keys(newObj)) {
+  for (let key of Object.keys(newObj)) { // eslint-disable-line
     cb(newObj[key], key);
   }
 

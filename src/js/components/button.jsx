@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import Icon from './icon';
-import * as Icons from '../../icons';
+import * as Icons from '../icons';
 import { BUTTON_TITLES, BUTTON_LABELS } from '../const';
 
 const Button = ({ command, handler, pressed, ...props }) => {

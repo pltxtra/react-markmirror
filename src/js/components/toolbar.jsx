@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Toolbar = ({ renderButton, ...props }) => (
+const Toolbar = ({ renderButton, showUpload, ...props }) => (
   <div {...props} className="markmirror__toolbar">
     {renderButton('h1')}
     {renderButton('h2')}
@@ -12,6 +12,7 @@ const Toolbar = ({ renderButton, ...props }) => (
     {renderButton('quote')}
     {renderButton('link')}
     {renderButton('image')}
+    {showUpload ? renderButton('upload') : null}
     {renderButton('full')}
   </div>
 );

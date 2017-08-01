@@ -9,3 +9,4 @@ export { default as uList } from './uList';
 export { default as oList } from './oList';
 export { default as quote } from './quote';
 export { default as full } from './full';
+export { default as upload } from './upload';

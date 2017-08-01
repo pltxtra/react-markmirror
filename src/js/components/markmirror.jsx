@@ -31,6 +31,10 @@ export default class Markmirror extends React.Component {
      */
     theme:             PropTypes.string,
     /**
+     * True to make the editor read only.
+     */
+    readOnly:          PropTypes.bool,
+    /**
      * Number of spaces that make up a tab.
      */
     tabSize:           PropTypes.number,
@@ -54,6 +58,10 @@ export default class Markmirror extends React.Component {
      * Event handlers passed to the internal CodeMirror instance.
      */
     codemirrorEvents:  PropTypes.object,
+    /**
+     * List of mime types for files which may be dropped/uploaded.
+     */
+    acceptedFileTypes: PropTypes.array,
     /**
      * Class passed to the root element.
      */
@@ -81,11 +89,13 @@ export default class Markmirror extends React.Component {
     value:             '',
     theme:             'light',
     tabSize:           2,
+    readOnly:          false,
     indentWithTabs:    false,
     lineNumbers:       false,
     lineWrapping:      true,
     codemirrorOptions: {},
     codemirrorEvents:  {},
+    acceptedFileTypes: null,
     className:         '',
     renderToolbar:     null,
     renderButton:      null,
@@ -105,6 +115,7 @@ export default class Markmirror extends React.Component {
     super(props);
 
     this.rootRef       = null;
+    this.fileRef       = null;
     this.codemirrorRef = null;
     this.codemirror    = null;
     this.state         = {
@@ -150,6 +161,7 @@ export default class Markmirror extends React.Component {
     const options = objectAssign({
       mode:           'markdown',
       theme:          THEMES.indexOf(this.props.theme) !== -1 ? 'default' : this.props.theme,
+      readOnly:       this.props.readOnly,
       tabSize:        this.props.tabSize,
       lineNumbers:    this.props.lineNumbers,
       lineWrapping:   this.props.lineWrapping,
@@ -198,9 +210,16 @@ export default class Markmirror extends React.Component {
   };
 
   /**
+   * Called when the upload button is clicked
+   */
+  commandUpload = () => {
+    this.fileRef.click();
+  };
+
+  /**
    * Switches between full screen
    */
-  toggleFullScreen = () => {
+  commandFullScreen = () => {
     if (!this.state.isFullScreen) {
       if (this.rootRef.requestFullscreen) {
         this.rootRef.requestFullscreen();
@@ -224,6 +243,25 @@ export default class Markmirror extends React.Component {
       }
       this.rootRef.classList.remove('markmirror--fullscreen');
     }
+  };
+
+  /**
+   * Called when the fullscreen button is clicked
+   */
+  handleFullScreen = () => {
+    let isFullScreen = false;
+    if (document.fullscreenElement) {
+      isFullScreen = true;
+    } else if (document.webkitFullscreenElement) {
+      isFullScreen = true;
+    } else if (document.mozFullscreenElement) {
+      isFullScreen = true;
+    } else if (document.msFullscreenElement) {
+      isFullScreen = true;
+    }
+    this.setState({
+      isFullScreen
+    });
   };
 
   /**
@@ -284,7 +322,7 @@ export default class Markmirror extends React.Component {
    * @param {File[]} files
    */
   handleFiles = (files) => {
-    let { onFiles } = this.props;
+    let { onFiles, acceptedFileTypes } = this.props; // eslint-disable-line
     if (!onFiles) {
       return;
     }
@@ -293,36 +331,35 @@ export default class Markmirror extends React.Component {
     }
 
     for (let i = 0; i < files.length; i++) {
-      onFiles(files[i])
-        .then((result) => {
-          if (result.type === 'image') {
-            this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
-          } else if (result.type === 'link') {
-            this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
-          }
-        }).catch((err) => {
-          this.codemirror.replaceSelection(`Upload error: ${err}`);
-        });
+      let mime = files[i].type.toLowerCase();
+      if (mime === 'image/jpeg') {
+        mime = 'image/jpg';
+      }
+
+      if (!acceptedFileTypes || (acceptedFileTypes && acceptedFileTypes.indexOf(mime) !== -1)) {
+        onFiles(files[i])
+          .then((result) => {
+            if (result.type === 'image') {
+              this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
+            } else if (result.type === 'link') {
+              this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
+            }
+          }).catch((err) => {
+            this.codemirror.replaceSelection(`Upload error: ${err}`);
+          });
+      }
     }
   };
 
   /**
-   * Called when the fullscreen button is clicked
+   * Called when the hidden file input changes
+   *
+   * @param {Event} e
    */
-  handleFullScreen = () => {
-    let isFullScreen = false;
-    if (document.fullscreenElement) {
-      isFullScreen = true;
-    } else if (document.webkitFullscreenElement) {
-      isFullScreen = true;
-    } else if (document.mozFullscreenElement) {
-      isFullScreen = true;
-    } else if (document.msFullscreenElement) {
-      isFullScreen = true;
+  handleFileChange = (e) => {
+    if (e.target.files.length > 0) {
+      this.handleFiles(e.target.files);
     }
-    this.setState({
-      isFullScreen
-    });
   };
 
   /**
@@ -336,7 +373,9 @@ export default class Markmirror extends React.Component {
     const pressed = (this.state.cursor[command] || (command === 'full' && this.state.isFullScreen));
     if (!handler) {
       if (command === 'full') {
-        handler = this.toggleFullScreen;
+        handler = this.commandFullScreen;
+      } else if (command === 'upload') {
+        handler = this.commandUpload;
       } else {
         handler = this.execCommand.bind(this, command);
       }
@@ -354,17 +393,18 @@ export default class Markmirror extends React.Component {
    * @returns {XML}
    */
   renderToolbar = () => {
+    const showUpload = this.props.onFiles !== null;
     if (this.props.renderToolbar) {
-      return this.props.renderToolbar(this, this.props.renderButton || this.renderButton);
+      return this.props.renderToolbar(this, this.props.renderButton || this.renderButton, showUpload);
     }
-    return <Toolbar renderButton={this.renderButton} />;
+    return <Toolbar renderButton={this.renderButton} showUpload={showUpload} />;
   };
 
   /**
    * @returns {XML}
    */
   render() {
-    const { value, name, theme, className, ...props } = this.props;
+    const { value, name, theme, onFiles, className, ...props } = this.props;
     const { isFocused } = this.state;
 
     return (
@@ -389,6 +429,14 @@ export default class Markmirror extends React.Component {
             autoComplete="off"
           />
         </div>
+        {!onFiles ? null : (
+          <input
+            type="file"
+            style={{ display: 'none' }}
+            ref={(ref) => { this.fileRef = ref; }}
+            onChange={this.handleFileChange}
+          />
+        )}
       </div>
     );
   }
