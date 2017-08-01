@@ -61,8 +61,15 @@ True to wrap long lines.
 List of mime types for files which may be dropped/uploaded.
 
 ```jsx
-<Markmirror acceptedFileTypes={['image/jpg', 'image/gif', 'image/png']} />
+<Markmirror acceptedFileTypes={['image/jpg', 'image/gif', 'image/png', 'video/mpg']} />
 ```
+
+The specific type may be excluded.
+
+```jsx
+<Markmirror acceptedFileTypes={['image', 'video', 'application/pdf']} />
+```
+
 
 **codemirrorOptions={object}**  
 Options passed to the internal CodeMirror instance. See the [CodeMirror API docs](https://codemirror.net/doc/manual.html#api) for the available options.

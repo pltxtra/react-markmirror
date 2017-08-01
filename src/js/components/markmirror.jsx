@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import Toolbar from './toolbar';
 import Button from './button';
 import { THEMES } from '../const';
+import { mimeIsMatch } from '../utils/mime';
 import { getCursorState, execCommand } from '../commands';
 import { objectKeyFilter, objectForEach, objectAssign } from '../utils/objects';
 import handlerDataURI from '../handlers/handlerDataURI';
@@ -95,7 +96,7 @@ export default class Markmirror extends React.Component {
     lineWrapping:      true,
     codemirrorOptions: {},
     codemirrorEvents:  {},
-    acceptedFileTypes: null,
+    acceptedFileTypes: [],
     className:         '',
     renderToolbar:     null,
     renderButton:      null,
@@ -331,12 +332,8 @@ export default class Markmirror extends React.Component {
     }
 
     for (let i = 0; i < files.length; i++) {
-      let mime = files[i].type.toLowerCase();
-      if (mime === 'image/jpeg') {
-        mime = 'image/jpg';
-      }
-
-      if (!acceptedFileTypes || (acceptedFileTypes && acceptedFileTypes.indexOf(mime) !== -1)) {
+      const mime = files[i].type;
+      if (acceptedFileTypes.length === 0 || acceptedFileTypes.some(v => mimeIsMatch(v, mime))) {
         onFiles(files[i])
           .then((result) => {
             if (result.type === 'image') {
