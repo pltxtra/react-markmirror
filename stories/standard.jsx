@@ -8,7 +8,7 @@ class Story extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      code:  DEFAULT_VALUE.trim()
+      code: DEFAULT_VALUE.trim()
     };
   }
 

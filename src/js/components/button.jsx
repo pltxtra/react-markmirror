@@ -2,17 +2,17 @@ import React from 'react';
 import classNames from 'classnames';
 import Icon from './icon';
 import * as Icons from '../icons';
-import { BUTTON_TITLES, BUTTON_LABELS } from '../const';
+import { CSS_PREFIX, BUTTON_TITLES, BUTTON_LABELS } from '../const';
 
 const Button = ({ command, handler, pressed, ...props }) => {
   const label      = BUTTON_LABELS[command];
   const isTextIcon = Icons[command] === undefined;
-  const labelClass = isTextIcon ? 'markmirror__button__label__icon' : 'markmirror__button__label';
+  const labelClass = isTextIcon ? `${CSS_PREFIX}__button__label__icon` : `${CSS_PREFIX}__button__label`;
   const className  = classNames(
-    'markmirror__button',
-    `markmirror__button--${command}`,
+    `${CSS_PREFIX}__button`,
+    `${CSS_PREFIX}__button--${command}`,
     {
-      'markmirror__button--pressed': pressed
+      [`${CSS_PREFIX}__button--pressed`]: pressed
     }
   );
 

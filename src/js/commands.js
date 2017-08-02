@@ -7,62 +7,75 @@ const TOK_ULIST      = 'uList';
 const TOK_STRING     = 'string';
 const TOK_VARIABLE_2 = 'variable-2';
 
+export const CMD_H1     = 'h1';
+export const CMD_H2     = 'h2';
+export const CMD_H3     = 'h3';
+export const CMD_BOLD   = 'bold';
+export const CMD_ITALIC = 'italic';
+export const CMD_QUOTE  = 'quote';
+export const CMD_OLIST  = 'oList';
+export const CMD_ULIST  = 'uList';
+export const CMD_LINK   = 'link';
+export const CMD_IMAGE  = 'image';
+export const CMD_FULL   = 'full';
+export const CMD_UPLOAD = 'upload';
+
 const COMMANDS = {
-  h1: {
+  [CMD_H1]: {
     type:   'block',
     token:  'header-1',
     before: '#',
     re:     /^#\s+/,
     text:   'Heading'
   },
-  h2: {
+  [CMD_H2]: {
     type:   'block',
     token:  'header-2',
     before: '##',
     re:     /^##\s+/,
     text:   'Heading'
   },
-  h3: {
+  [CMD_H3]: {
     type:   'block',
     token:  'header-3',
     before: '###',
     re:     /^###\s+/,
     text:   'Heading'
   },
-  bold: {
+  [CMD_BOLD]: {
     type:   'inline',
     token:  'strong',
     before: '**',
     after:  '**',
     text:   'bold text'
   },
-  italic: {
+  [CMD_ITALIC]: {
     type:   'inline',
     token:  'em',
     before: '_',
     after:  '_',
     text:   'italic text'
   },
-  quote: {
+  [CMD_QUOTE]: {
     type:   'block',
     token:  'quote',
     re:     /^>\s+/,
     before: '>',
     text:   'quote'
   },
-  oList: {
+  [CMD_OLIST]: {
     type:   'block',
     before: '1. ',
     re:     /^\d+\.\s+/,
     text:   'List'
   },
-  uList: {
+  [CMD_ULIST]: {
     type:   'block',
     before: '* ',
     re:     /^[*-]\s+/,
     text:   'List'
   },
-  link: {
+  [CMD_LINK]: {
     type:   'inline',
     token:  'link',
     before: '[link](',
@@ -70,7 +83,7 @@ const COMMANDS = {
     re:     /\[(?:[^\]]+)]\(([^)]+)\)/,
     text:   'Link'
   },
-  image: {
+  [CMD_IMAGE]: {
     type:   'inline',
     token:  'image',
     before: '![Alt Text](',

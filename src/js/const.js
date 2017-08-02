@@ -1,31 +1,36 @@
+import * as commands from './commands';
+
+export const CSS_PREFIX      = 'markmirror';
+export const DROP_TYPE_IMAGE = 'image';
+export const DROP_TYPE_LINK  = 'link';
+export const THEMES          = ['light', 'dark'];
+
 export const BUTTON_TITLES = {
-  h1:     'Header 1',
-  h2:     'Header 2',
-  h3:     'Header 3',
-  bold:   'Bold',
-  italic: 'Italic',
-  oList:  'Ordered List',
-  uList:  'Unordered List',
-  quote:  'Quote',
-  link:   'Link',
-  image:  'Image',
-  full:   'Fullscreen',
-  upload: 'Upload'
+  [commands.CMD_H1]:     'Header 1',
+  [commands.CMD_H2]:     'Header 2',
+  [commands.CMD_H3]:     'Header 3',
+  [commands.CMD_BOLD]:   'Bold',
+  [commands.CMD_ITALIC]: 'Italic',
+  [commands.CMD_OLIST]:  'Ordered List',
+  [commands.CMD_ULIST]:  'Unordered List',
+  [commands.CMD_QUOTE]:  'Quote',
+  [commands.CMD_LINK]:   'Link',
+  [commands.CMD_IMAGE]:  'Image',
+  [commands.CMD_FULL]:   'Fullscreen',
+  [commands.CMD_UPLOAD]: 'Upload'
 };
 
 export const BUTTON_LABELS = {
-  h1:     'H1',
-  h2:     'H2',
-  h3:     'H3',
-  bold:   'B',
-  italic: 'I',
-  oList:  'OL',
-  uList:  'UL',
-  quote:  'Q',
-  link:   'L',
-  image:  'I',
-  full:   'F',
-  upload: 'U'
+  [commands.CMD_H1]:     'H1',
+  [commands.CMD_H2]:     'H2',
+  [commands.CMD_H3]:     'H3',
+  [commands.CMD_BOLD]:   'B',
+  [commands.CMD_ITALIC]: 'I',
+  [commands.CMD_OLIST]:  'OL',
+  [commands.CMD_ULIST]:  'UL',
+  [commands.CMD_QUOTE]:  'Q',
+  [commands.CMD_LINK]:   'L',
+  [commands.CMD_IMAGE]:  'I',
+  [commands.CMD_FULL]:   'F',
+  [commands.CMD_UPLOAD]: 'U'
 };
-
-export const THEMES = ['light', 'dark'];

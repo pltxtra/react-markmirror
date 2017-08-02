@@ -1,18 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/addon/edit/continuelist';
-import classNames from 'classnames';
-import Toolbar from './toolbar';
-import Button from './button';
-import { THEMES } from '../const';
+
 import { mimeIsMatch } from '../utils/mime';
-import { getCursorState, execCommand } from '../commands';
+import { cssAddClass, cssRemoveClass } from '../utils/css';
+import { CSS_PREFIX, THEMES, DROP_TYPE_IMAGE, DROP_TYPE_LINK } from '../const';
+import { getCursorState, execCommand, CMD_FULL, CMD_UPLOAD } from '../commands';
+import { isFullScreen, requestFullscreen, exitFullscreen } from '../utils/fullscreen';
 import { objectKeyFilter, objectForEach, objectAssign } from '../utils/objects';
+
 import handlerDataURI from '../handlers/handlerDataURI';
 import handlerUpload from '../handlers/handlerUpload';
+import Toolbar from './toolbar';
+import Button from './button';
 
 import '../../../node_modules/codemirror/lib/codemirror.css';
 import '../../less/main.less';
@@ -120,9 +124,8 @@ export default class Markmirror extends React.Component {
     this.codemirrorRef = null;
     this.codemirror    = null;
     this.state         = {
-      cursor:       {},
-      isFocused:    false,
-      isFullScreen: false
+      cursor:    {},
+      isFocused: false
     };
   }
 
@@ -131,10 +134,6 @@ export default class Markmirror extends React.Component {
    */
   componentDidMount() {
     this.setupCodemirror();
-    document.addEventListener('fullscreenchange', this.handleFullScreen);
-    document.addEventListener('webkitfullscreenchange', this.handleFullScreen);
-    document.addEventListener('mozfullscreenchange', this.handleFullScreen);
-    document.addEventListener('MSFullscreenChange', this.handleFullScreen);
   }
 
   componentDidUpdate(prevProps) {
@@ -148,10 +147,6 @@ export default class Markmirror extends React.Component {
    */
   componentWillUnmount() {
     this.destroyCodemirror();
-    document.removeEventListener('fullscreenchange', this.handleFullScreen);
-    document.removeEventListener('webkitfullscreenchange', this.handleFullScreen);
-    document.removeEventListener('mozfullscreenchange', this.handleFullScreen);
-    document.removeEventListener('MSFullscreenChange', this.handleFullScreen);
   }
 
   /**
@@ -221,48 +216,13 @@ export default class Markmirror extends React.Component {
    * Switches between full screen
    */
   commandFullScreen = () => {
-    if (!this.state.isFullScreen) {
-      if (this.rootRef.requestFullscreen) {
-        this.rootRef.requestFullscreen();
-      } else if (this.rootRef.webkitRequestFullscreen) {
-        this.rootRef.webkitRequestFullscreen();
-      } else if (this.rootRef.mozRequestFullScreen) {
-        this.rootRef.mozRequestFullScreen();
-      } else if (this.rootRef.msRequestFullscreen) {
-        this.rootRef.msRequestFullscreen();
-      }
-      this.rootRef.classList.add('markmirror--fullscreen');
+    if (!isFullScreen()) {
+      requestFullscreen(this.rootRef);
+      cssAddClass(this.rootRef, `${CSS_PREFIX}--fullscreen`);
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-      this.rootRef.classList.remove('markmirror--fullscreen');
+      exitFullscreen();
+      cssRemoveClass(this.rootRef, `${CSS_PREFIX}--fullscreen`);
     }
-  };
-
-  /**
-   * Called when the fullscreen button is clicked
-   */
-  handleFullScreen = () => {
-    let isFullScreen = false;
-    if (document.fullscreenElement) {
-      isFullScreen = true;
-    } else if (document.webkitFullscreenElement) {
-      isFullScreen = true;
-    } else if (document.mozFullscreenElement) {
-      isFullScreen = true;
-    } else if (document.msFullscreenElement) {
-      isFullScreen = true;
-    }
-    this.setState({
-      isFullScreen
-    });
   };
 
   /**
@@ -336,9 +296,9 @@ export default class Markmirror extends React.Component {
       if (acceptedFileTypes.length === 0 || acceptedFileTypes.some(v => mimeIsMatch(v, mime))) {
         onFiles(files[i])
           .then((result) => {
-            if (result.type === 'image') {
+            if (result.type === DROP_TYPE_IMAGE) {
               this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
-            } else if (result.type === 'link') {
+            } else if (result.type === DROP_TYPE_LINK) {
               this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
             }
           }).catch((err) => {
@@ -367,11 +327,11 @@ export default class Markmirror extends React.Component {
    * @returns {XML}
    */
   renderButton = (command, handler) => {
-    const pressed = (this.state.cursor[command] || (command === 'full' && this.state.isFullScreen));
+    const pressed = (this.state.cursor[command] || (command === CMD_FULL && isFullScreen()));
     if (!handler) {
-      if (command === 'full') {
+      if (command === CMD_FULL) {
         handler = this.commandFullScreen;
-      } else if (command === 'upload') {
+      } else if (command === CMD_UPLOAD) {
         handler = this.commandUpload;
       } else {
         handler = this.execCommand.bind(this, command);
@@ -408,14 +368,14 @@ export default class Markmirror extends React.Component {
       <div
         {...objectKeyFilter(props, Markmirror.propTypes)}
         ref={(ref) => { this.rootRef = ref; }}
-        className={classNames('markmirror', `markmirror--${theme}-theme`, className)}
+        className={classNames(CSS_PREFIX, `${CSS_PREFIX}--${theme}-theme`, className)}
         allowFullScreen
       >
         {this.renderToolbar()}
         <div className={classNames(
-          'markmirror__editor',
+          `${CSS_PREFIX}__editor`,
           {
-            'markmirror__editor--focused': isFocused
+            [`${CSS_PREFIX}__editor--focused`]: isFocused
           }
           )}
         >
