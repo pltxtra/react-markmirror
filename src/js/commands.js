@@ -76,15 +76,15 @@ const COMMANDS = {
     text:   'List'
   },
   [CMD_LINK]: {
-    type:   'inline',
+    type:   'link',
     token:  'link',
-    before: '[link](',
-    after:  ')',
-    re:     /\[(?:[^\]]+)]\(([^)]+)\)/,
+    before: '[',
+    after:  '](http://)',
+    re:     /\[(?:([^\]]+))]\([^)]+\)/,
     text:   'Link'
   },
   [CMD_IMAGE]: {
-    type:   'inline',
+    type:   'image',
     token:  'image',
     before: '![Alt Text](',
     after:  ')',
@@ -99,6 +99,11 @@ objectForEach(COMMANDS, (value, key) => {
     COMMAND_TOKENS[value.token] = key;
   }
 });
+
+let props = {};
+export function setProps(p) {
+  props = p;
+}
 
 const getTokenTypes = (token, previousTokens) => {
   if (!token.type) {
@@ -145,24 +150,24 @@ const getTokenTypes = (token, previousTokens) => {
 };
 
 const operations = {
-  inlineApply(cm, format) {
+  inlineApply(cm, cmd) {
     const startPoint = cm.getCursor('start');
-    const endPoint = cm.getCursor('end');
+    const endPoint   = cm.getCursor('end');
 
-    cm.replaceSelection(format.before + cm.getSelection() + format.after);
+    cm.replaceSelection(cmd.before + cm.getSelection() + cmd.after);
 
-    startPoint.ch += format.before.length;
-    endPoint.ch += format.after.length;
+    startPoint.ch += cmd.before.length;
+    endPoint.ch   += cmd.after.length;
     cm.setSelection(startPoint, endPoint);
     cm.focus();
   },
-  inlineRemove(cm, format) {
+  inlineRemove(cm, cmd) {
     const startPoint = cm.getCursor('start');
     const endPoint   = cm.getCursor('end');
     const line       = cm.getLine(startPoint.line);
 
-    if (format.hasOwnProperty('re')) { // eslint-disable-line
-      const text = line.replace(format.re, '$1');
+    if (cmd.hasOwnProperty('re')) { // eslint-disable-line
+      const text = line.replace(cmd.re, '$1');
       cm.replaceRange(
         text,
         { line: startPoint.line, ch: 0 },
@@ -178,7 +183,7 @@ const operations = {
 
     let startPos = startPoint.ch;
     while (startPos) {
-      if (line.substr(startPos, format.before.length) === format.before) {
+      if (line.substr(startPos, cmd.before.length) === cmd.before) {
         break;
       }
       startPos -= 1;
@@ -186,15 +191,15 @@ const operations = {
 
     let endPos = endPoint.ch;
     while (endPos <= line.length) {
-      if (line.substr(endPos, format.after.length) === format.after) {
+      if (line.substr(endPos, cmd.after.length) === cmd.after) {
         break;
       }
       endPos += 1;
     }
 
     const start = line.slice(0, startPos);
-    const mid = line.slice(startPos + format.before.length, endPos);
-    const end = line.slice(endPos + format.after.length);
+    const mid = line.slice(startPos + cmd.before.length, endPos);
+    const end = line.slice(endPos + cmd.after.length);
     cm.replaceRange(
       start + mid + end,
       { line: startPoint.line, ch: 0 },
@@ -206,25 +211,25 @@ const operations = {
     );
     cm.focus();
   },
-  blockApply(cm, format) {
+  blockApply(cm, cmd) {
     const startPoint = cm.getCursor('start');
     const line = cm.getLine(startPoint.line);
-    const text = `${format.before} ${line.length ? line : format.text}`;
+    const text = `${cmd.before} ${line.length ? line : cmd.text}`;
     cm.replaceRange(
       text,
       { line: startPoint.line, ch: 0 },
       { line: startPoint.line, ch: line.length + 1 }
     );
     cm.setSelection(
-      { line: startPoint.line, ch: format.before.length + 1 },
+      { line: startPoint.line, ch: cmd.before.length + 1 },
       { line: startPoint.line, ch: text.length }
     );
     cm.focus();
   },
-  blockRemove(cm, format) {
+  blockRemove(cm, cmd) {
     const startPoint = cm.getCursor('start');
     const line = cm.getLine(startPoint.line);
-    const text = line.replace(format.re, '');
+    const text = line.replace(cmd.re, '');
     cm.replaceRange(
       text,
       { line: startPoint.line, ch: 0 },
@@ -235,6 +240,51 @@ const operations = {
       { line: startPoint.line, ch: text.length }
     );
     cm.focus();
+  },
+  imageApply(cm, cmd) {
+    const startPoint = cm.getCursor('start');
+    const endPoint   = cm.getCursor('end');
+    const selection  = cm.getSelection();
+    if (!selection) {
+      props.onPrompt('image')
+        .then((value) => {
+          if (value) {
+            cm.replaceSelection(cmd.before + value + cmd.after);
+            startPoint.ch += cmd.before.length;
+            endPoint.ch   += cmd.after.length;
+            cm.setSelection(startPoint, endPoint);
+            cm.focus();
+          }
+        });
+    } else {
+      cm.replaceSelection(cmd.before + selection + cmd.after);
+      startPoint.ch += cmd.before.length;
+      endPoint.ch   += cmd.after.length;
+      cm.setSelection(startPoint, endPoint);
+      cm.focus();
+    }
+  },
+  imageRemove(cm, cmd) {
+    return operations.inlineRemove(cm, cmd);
+  },
+  linkApply(cm, cmd) {
+    const startPoint = cm.getCursor('start');
+    const endPoint   = cm.getCursor('end');
+    const selection  = cm.getSelection();
+
+    props.onPrompt('link')
+      .then((value) => {
+        if (value) {
+          cm.replaceSelection(cmd.before + selection + cmd.after.replace('http://', value));
+          startPoint.ch += cmd.before.length;
+          endPoint.ch   += cmd.after.length;
+          cm.setSelection(startPoint, endPoint);
+          cm.focus();
+        }
+      });
+  },
+  linkRemove(cm, cmd) {
+    return operations.inlineRemove(cm, cmd);
   }
 };
 
@@ -260,7 +310,7 @@ export function getCursorState(cm) {
 }
 
 export function execCommand(cm, key) {
-  const cs = getCursorState(cm);
-  const format = COMMANDS[key];
-  operations[format.type + (cs[key] ? 'Remove' : 'Apply')](cm, format);
+  const cs  = getCursorState(cm);
+  const cmd = COMMANDS[key];
+  operations[cmd.type + (cs[key] ? 'Remove' : 'Apply')](cm, cmd);
 }

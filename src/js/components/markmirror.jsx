@@ -9,12 +9,13 @@ import 'codemirror/addon/edit/continuelist';
 import { mimeIsMatch } from '../utils/mime';
 import { cssAddClass, cssRemoveClass } from '../utils/css';
 import { CSS_PREFIX, THEMES, DROP_TYPE_IMAGE, DROP_TYPE_LINK } from '../const';
-import { getCursorState, execCommand, CMD_FULL, CMD_UPLOAD } from '../commands';
+import { getCursorState, execCommand, setProps, CMD_FULL, CMD_UPLOAD } from '../commands';
 import { isFullScreen, requestFullscreen, exitFullscreen } from '../utils/fullscreen';
 import { objectKeyFilter, objectForEach, objectAssign } from '../utils/objects';
 
 import handlerDataURI from '../handlers/handlerDataURI';
 import handlerUpload from '../handlers/handlerUpload';
+import handlerPrompt from '../handlers/handlerPrompt';
 import Toolbar from './toolbar';
 import Button from './button';
 
@@ -80,6 +81,10 @@ export default class Markmirror extends React.Component {
      */
     onFiles:           PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.string]),
     /**
+     * Called when prompting the client for input.
+     */
+    onPrompt:          PropTypes.func,
+    /**
      * Renders each toolbar button.
      */
     renderToolbar:     PropTypes.func,
@@ -105,11 +110,13 @@ export default class Markmirror extends React.Component {
     renderToolbar:     null,
     renderButton:      null,
     onFiles:           null,
+    onPrompt:          handlerPrompt,
     onChange:          () => {}
   };
 
   static handlerDataURI = handlerDataURI;
   static handlerUpload  = handlerUpload;
+  static handlerPrompt  = handlerPrompt;
 
   /**
    * Constructor
@@ -118,6 +125,7 @@ export default class Markmirror extends React.Component {
    */
   constructor(props) {
     super(props);
+    setProps(props);
 
     this.rootRef       = null;
     this.fileRef       = null;

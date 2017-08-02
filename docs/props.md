@@ -109,6 +109,13 @@ Handles files which are dropped onto the editor. See the [uploading docs](docs/u
 <Markmirror onFiles={Markmirror.handlerUpload('http://yoursite.com/upload')} />
 ```
 
+**onPrompt={function}**  
+Handles prompting the client to input a link or image URL. See the [prompt docs](docs/prompt.md) for more information.
+
+```jsx
+<Markmirror onPrompt={Markmirror.handlerPrompt} />
+```
+
 **renderButton={function}**  
 Renders each toolbar button. See the [button customizing docs](docs/button.md) for more information.
 
