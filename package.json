@@ -1,6 +1,6 @@
 {
   "name": "react-markmirror",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "React Markdown Editor",
   "main": "dist/index.js",
   "author": "Jed Watson",
@@ -71,8 +71,13 @@
     "pub": "./publish.sh"
   },
   "jest": {
-    "transform": {".*": "<rootDir>/node_modules/webpack-babel-jest"},
-    "moduleFileExtensions": ["js", "jsx"]
+    "transform": {
+      ".*": "<rootDir>/node_modules/webpack-babel-jest"
+    },
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ]
   },
   "keywords": [
     "react",
