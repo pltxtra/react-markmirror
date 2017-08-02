@@ -378,7 +378,7 @@ export default class Markmirror extends React.Component {
   renderToolbar = () => {
     const showUpload = this.props.onFiles !== null;
     if (this.props.renderToolbar) {
-      return this.props.renderToolbar(this, this.props.renderButton || this.renderButton, showUpload);
+      return this.props.renderToolbar(this, this.renderButton, showUpload);
     }
     return <Toolbar renderButton={this.renderButton} showUpload={showUpload} />;
   };
