@@ -40,6 +40,7 @@
     "connect-busboy": "0.0.2",
     "cors": "^2.8.4",
     "css-loader": "^0.28.4",
+    "enzyme": "^2.9.1",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.2",
     "eslint-import-resolver-babel-module": "^3.0.0",
@@ -50,10 +51,12 @@
     "file-loader": "^0.11.2",
     "fs-extra": "^4.0.1",
     "jest": "^20.0.4",
+    "jsdom": "^11.1.0",
     "less": "^2.7.2",
     "less-loader": "^4.0.5",
     "marked": "^0.3.6",
     "react": "^15.0",
+    "react-addons-test-utils": "^15.6.0",
     "react-dom": "^15.0",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
@@ -74,6 +77,7 @@
     "transform": {
       ".*": "<rootDir>/node_modules/webpack-babel-jest"
     },
+    "setupTestFrameworkScriptFile": "<rootDir>/tests/.setup.js",
     "moduleFileExtensions": [
       "js",
       "jsx"

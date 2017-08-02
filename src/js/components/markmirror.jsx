@@ -180,6 +180,7 @@ export default class Markmirror extends React.Component {
     }, this.props.codemirrorOptions);
 
     this.codemirror = CodeMirror.fromTextArea(this.codemirrorRef, options);
+    this.codemirror.setValue(this.props.value);
     this.codemirror.on('change', this.handleCodemirrorChange);
     this.codemirror.on('focus', this.handleCodemirrorFocus);
     this.codemirror.on('blur', this.handleCodemirrorBlur);

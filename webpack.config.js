@@ -27,7 +27,10 @@ const config = {
         commonjs2: 'prop-types',
         commonjs: 'prop-types',
         amd: 'prop-types'
-      }
+      },
+      'react/addons': true,
+      'react/lib/ExecutionEnvironment': true,
+      'react/lib/ReactContext': true
     }
   ],
   module: {
