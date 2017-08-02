@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "classnames": "^2.2.5",
-    "codemirror": "^5.18.2"
+    "codemirror": "^5.18.2",
+    "webpack-babel-jest": "^1.0.4"
   },
   "peerDependencies": {
     "react": "^15.0.0",
@@ -62,11 +63,16 @@
     "build": "webpack -p",
     "storybook": "start-storybook -p 6007",
     "storybook:build": "build-storybook -o stories/build",
-    "test": "jest tests/**/*.test.js",
+    "test": "jest tests/**/*.test.*",
+    "test:watch": "npm run test -- --watch",
     "test:server": "babel-node tests/server.js",
     "lint": "eslint ./src/js --cache --cache-location=.cache/eslint --ext .js,.jsx",
     "lint:fix": "npm run lint -- --fix",
     "pub": "./publish.sh"
+  },
+  "jest": {
+    "transform": {".*": "<rootDir>/node_modules/webpack-babel-jest"},
+    "moduleFileExtensions": ["js", "jsx"]
   },
   "keywords": [
     "react",

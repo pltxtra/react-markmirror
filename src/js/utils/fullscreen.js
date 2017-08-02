@@ -5,13 +5,13 @@
  * @returns {boolean}
  */
 export function isSupported() {
-  if (document.requestFullscreen) {
+  if (document.exitFullscreen) {
     return true;
-  } else if (document.webkitRequestFullscreen) {
+  } else if (document.webkitExitFullscreen) {
     return true;
-  } else if (document.mozRequestFullScreen) {
+  } else if (document.mozCancelFullScreen) {
     return true;
-  } else if (document.msRequestFullscreen) {
+  } else if (document.msExitFullscreen) {
     return true;
   }
 
