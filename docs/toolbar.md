@@ -23,11 +23,12 @@ class Editor extends React.Component {
   /**
    * Removes every button from the toolbar except the bold and italic buttons
    * 
-   * @param {Markmirror} markmirror   The object calling the function
-   * @param {Function}   renderButton Renders the standard button for the given command
-   * @param {Boolean}    showUpload   Whether the upload button should be displayed
+   * @param {Markmirror} markmirror     The object calling the function
+   * @param {Function}   renderButton   Renders the standard button for the given command
+   * @param {Boolean}    showUpload     Whether the upload button should be displayed
+   * @param {Boolean}    showFullscreen Whether the fullscreen button should be displayed
    */
-  renderToolbar = (markmirror, renderButton, showUpload) => (
+  renderToolbar = (markmirror, renderButton, showUpload, showFullscreen) => (
     <div className="markmirror__toolbar myapp__toolbar">
       {renderButton('bold')}
       {renderButton('italic')}
