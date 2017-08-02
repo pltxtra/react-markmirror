@@ -6,10 +6,11 @@ import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/addon/edit/continuelist';
 
+import enLocale from '../locales/en';
 import { mimeIsMatch } from '../utils/mime';
 import { cssAddClass, cssRemoveClass } from '../utils/css';
 import { CSS_PREFIX, THEMES, DROP_TYPE_IMAGE, DROP_TYPE_LINK } from '../const';
-import { getCursorState, execCommand, setProps, CMD_FULL, CMD_UPLOAD } from '../commands';
+import { getCursorState, execCommand, setProps, setLocale, CMD_FULL, CMD_UPLOAD } from '../commands';
 import { isFullScreen, requestFullscreen, exitFullscreen } from '../utils/fullscreen';
 import { objectKeyFilter, objectForEach, objectAssign } from '../utils/objects';
 
@@ -36,6 +37,10 @@ export default class Markmirror extends React.Component {
      * The styling theme. Possible values are "light" and "dark".
      */
     theme:             PropTypes.string,
+    /**
+     * Translations for the strings used by the editor.
+     */
+    i18n:              PropTypes.object,
     /**
      * True to make the editor read only.
      */
@@ -98,6 +103,7 @@ export default class Markmirror extends React.Component {
     name:              '',
     value:             '',
     theme:             'light',
+    i18n:              enLocale,
     tabSize:           2,
     readOnly:          false,
     indentWithTabs:    false,
@@ -126,6 +132,7 @@ export default class Markmirror extends React.Component {
   constructor(props) {
     super(props);
     setProps(props);
+    setLocale(props.i18n);
 
     this.rootRef       = null;
     this.fileRef       = null;
@@ -310,7 +317,7 @@ export default class Markmirror extends React.Component {
               this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
             }
           }).catch((err) => {
-            this.codemirror.replaceSelection(`Upload error: ${err}`);
+            this.codemirror.replaceSelection(`${this.props.i18n.uploadError}: ${err}`);
           });
       }
     }
@@ -346,10 +353,20 @@ export default class Markmirror extends React.Component {
       }
     }
 
+    const title = this.props.i18n[`${command}Title`];
+    const label = this.props.i18n[`${command}Label`];
     if (this.props.renderButton) {
-      return this.props.renderButton(this, command, handler, pressed);
+      return this.props.renderButton(this, command, handler, pressed, title, label);
     }
-    return <Button command={command} handler={handler} pressed={pressed} />;
+    return (
+      <Button
+        command={command}
+        handler={handler}
+        pressed={pressed}
+        title={title}
+        label={label}
+      />
+    );
   };
 
   /**

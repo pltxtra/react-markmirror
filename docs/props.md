@@ -22,6 +22,21 @@ The styling theme. See the [theme docs](docs/themes.md) for more information.
 <Markmirror theme="light" />
 ```
 
+**i18n={object}**  
+Translations for the strings displayed by the editor. See the [internationalization docs](docs/i18n.md) for more information.
+
+```jsx
+<Markmirror i18n={{
+  h1Title:     'Header 1',
+  h2Title:     'Header 2',
+  h3Title:     'Header 3',
+  boldTitle:   'Bold',
+  italicTitle: 'Italic',
+  ...
+}} />
+```
+
+
 **readOnly={boolean}**  
 Set to true to make the editor read only.
 

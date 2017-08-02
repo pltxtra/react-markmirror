@@ -138,10 +138,10 @@ class App extends React.Component {
    * call the function once the client enters a URL.
    *
    * @param {String} type Will be one of 'image' or 'link'
+   * @param {String} title Prompt title from i18n prop
    */
-  handlePrompt = type => (
+  handlePrompt = (type, title) => (
     new Promise((resolve) => {
-      const title = (type === 'image') ? 'Image URL' : 'Link URL';
       this.modalRef.show(title, resolve);
     })
   );

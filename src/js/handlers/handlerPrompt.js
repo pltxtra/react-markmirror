@@ -2,11 +2,11 @@
  * Link and image handler using the browser prompt
  *
  * @param {String} type One of 'image' or 'link'
+ * @param {String} title Prompt title. i18n prop
  * @returns {Promise}
  */
-export default function handlerPrompt(type) {
+export default function handlerPrompt(type, title) {
   return new Promise((resolve) => {
-    const text = (type === 'image') ? 'Image URL' : 'Link URL';
-    resolve(prompt(text)); // eslint-disable-line no-alert
+    resolve(prompt(title)); // eslint-disable-line no-alert
   });
 }

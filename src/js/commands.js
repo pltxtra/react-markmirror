@@ -26,54 +26,54 @@ const COMMANDS = {
     token:  'header-1',
     before: '#',
     re:     /^#\s+/,
-    text:   'Heading'
+    i18n:   'h1Placeholder'
   },
   [CMD_H2]: {
     type:   'block',
     token:  'header-2',
     before: '##',
     re:     /^##\s+/,
-    text:   'Heading'
+    i18n:   'h2Placeholder'
   },
   [CMD_H3]: {
     type:   'block',
     token:  'header-3',
     before: '###',
     re:     /^###\s+/,
-    text:   'Heading'
+    i18n:   'h3Placeholder'
   },
   [CMD_BOLD]: {
     type:   'inline',
     token:  'strong',
     before: '**',
     after:  '**',
-    text:   'bold text'
+    i18n:   'boldPlaceholder'
   },
   [CMD_ITALIC]: {
     type:   'inline',
     token:  'em',
     before: '_',
     after:  '_',
-    text:   'italic text'
+    i18n:   'italicPlaceholder'
   },
   [CMD_QUOTE]: {
     type:   'block',
     token:  'quote',
     re:     /^>\s+/,
     before: '>',
-    text:   'quote'
+    i18n:   'quotePlaceholder'
   },
   [CMD_OLIST]: {
     type:   'block',
     before: '1. ',
     re:     /^\d+\.\s+/,
-    text:   'List'
+    i18n:   'oListPlaceholder'
   },
   [CMD_ULIST]: {
     type:   'block',
     before: '* ',
     re:     /^[*-]\s+/,
-    text:   'List'
+    i18n:   'uListPlaceholder'
   },
   [CMD_LINK]: {
     type:   'link',
@@ -81,15 +81,15 @@ const COMMANDS = {
     before: '[',
     after:  '](http://)',
     re:     /\[(?:([^\]]+))]\([^)]+\)/,
-    text:   'Link'
+    i18n:   'linkPlaceholder'
   },
   [CMD_IMAGE]: {
     type:   'image',
     token:  'image',
-    before: '![Alt Text](',
+    before: '![alt](',
     after:  ')',
     re:     /!\[(?:[^\]]+)]\(([^)]+)\)/,
-    text:   'Image'
+    i18n:   'imagePlaceholder'
   }
 };
 
@@ -100,9 +100,15 @@ objectForEach(COMMANDS, (value, key) => {
   }
 });
 
-let props = {};
+let props  = {};
+let locale = {};
+
 export function setProps(p) {
   props = p;
+}
+
+export function setLocale(l) {
+  locale = l;
 }
 
 const getTokenTypes = (token, previousTokens) => {
@@ -214,7 +220,7 @@ const operations = {
   blockApply(cm, cmd) {
     const startPoint = cm.getCursor('start');
     const line = cm.getLine(startPoint.line);
-    const text = `${cmd.before} ${line.length ? line : cmd.text}`;
+    const text = `${cmd.before} ${line.length ? line : locale[cmd.i18n]}`;
     cm.replaceRange(
       text,
       { line: startPoint.line, ch: 0 },
@@ -246,10 +252,10 @@ const operations = {
     const endPoint   = cm.getCursor('end');
     const selection  = cm.getSelection();
     if (!selection) {
-      props.onPrompt('image')
+      props.onPrompt('image', locale.imageURL)
         .then((value) => {
           if (value) {
-            cm.replaceSelection(cmd.before + value + cmd.after);
+            cm.replaceSelection(cmd.before.replace('alt', locale[cmd.i18n]) + value + cmd.after);
             startPoint.ch += cmd.before.length;
             endPoint.ch   += cmd.after.length;
             cm.setSelection(startPoint, endPoint);
@@ -257,7 +263,7 @@ const operations = {
           }
         });
     } else {
-      cm.replaceSelection(cmd.before + selection + cmd.after);
+      cm.replaceSelection(cmd.before.replace('alt', locale[cmd.i18n]) + selection + cmd.after);
       startPoint.ch += cmd.before.length;
       endPoint.ch   += cmd.after.length;
       cm.setSelection(startPoint, endPoint);
@@ -272,7 +278,7 @@ const operations = {
     const endPoint   = cm.getCursor('end');
     const selection  = cm.getSelection();
 
-    props.onPrompt('link')
+    props.onPrompt('link', locale.linkURL)
       .then((value) => {
         if (value) {
           cm.replaceSelection(cmd.before + selection + cmd.after.replace('http://', value));

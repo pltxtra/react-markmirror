@@ -89,9 +89,8 @@ class Story extends React.Component {
     this.setState({ code });
   };
 
-  handlePrompt = type => (
+  handlePrompt = (type, title) => (
     new Promise((resolve) => {
-      const title = type === 'image' ? 'Image URL' : 'Link URL';
       this.modalRef.show(title, resolve);
     })
   );
