@@ -11,7 +11,7 @@ import { mimeIsMatch } from '../utils/mime';
 import { cssAddClass, cssRemoveClass } from '../utils/css';
 import { CSS_PREFIX, THEMES, DROP_TYPE_IMAGE, DROP_TYPE_LINK } from '../const';
 import { getCursorState, execCommand, setProps, setLocale, CMD_FULL, CMD_UPLOAD } from '../commands';
-import { isFullScreen, requestFullscreen, exitFullscreen } from '../utils/fullscreen';
+import { isSupported, isFullScreen, requestFullscreen, exitFullscreen } from '../utils/fullscreen';
 import { objectKeyFilter, objectForEach, objectAssign } from '../utils/objects';
 
 import handlerDataURI from '../handlers/handlerDataURI';
@@ -225,7 +225,9 @@ export default class Markmirror extends React.Component {
    * Called when the upload button is clicked
    */
   commandUpload = () => {
-    this.fileRef.click();
+    if (this.props.onFiles) {
+      this.fileRef.click();
+    }
   };
 
   /**
@@ -378,9 +380,15 @@ export default class Markmirror extends React.Component {
   renderToolbar = () => {
     const showUpload = this.props.onFiles !== null;
     if (this.props.renderToolbar) {
-      return this.props.renderToolbar(this, this.renderButton, showUpload);
+      return this.props.renderToolbar(this, this.renderButton, showUpload, isSupported());
     }
-    return <Toolbar renderButton={this.renderButton} showUpload={showUpload} />;
+    return (
+      <Toolbar
+        renderButton={this.renderButton}
+        showUpload={showUpload}
+        showFullscreen={isSupported()}
+      />
+    );
   };
 
   /**

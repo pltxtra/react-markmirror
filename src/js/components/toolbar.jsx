@@ -1,9 +1,8 @@
 import React from 'react';
 import { CSS_PREFIX } from '../const';
-import { isSupported } from '../utils/fullscreen';
 import * as commands from '../commands';
 
-const Toolbar = ({ renderButton, showUpload, ...props }) => (
+const Toolbar = ({ renderButton, showUpload, showFullscreen, ...props }) => (
   <div {...props} className={`${CSS_PREFIX}__toolbar`}>
     {renderButton(commands.CMD_H1)}
     {renderButton(commands.CMD_H2)}
@@ -16,7 +15,7 @@ const Toolbar = ({ renderButton, showUpload, ...props }) => (
     {renderButton(commands.CMD_LINK)}
     {renderButton(commands.CMD_IMAGE)}
     {showUpload ? renderButton(commands.CMD_UPLOAD) : null}
-    {isSupported() ? renderButton(commands.CMD_FULL) : null}
+    {showFullscreen ? renderButton(commands.CMD_FULL) : null}
   </div>
 );
 
