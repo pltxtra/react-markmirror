@@ -28,6 +28,7 @@ An demo is available at https://stories.headzoo.io/react-markmirror.
 
 * Syntax highlighting
 * Themes
+* Customizable toolbar, buttons, and prompts
 * Drag and drop file uploading
 * Internationalization (i18n)
 
