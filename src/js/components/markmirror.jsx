@@ -202,6 +202,24 @@ export default class Markmirror extends React.Component {
   }
 
   /**
+   * Returns the current value
+   *
+   * @returns {String}
+   */
+  get value() {
+    return this.codemirror.getValue();
+  }
+
+  /**
+   * Sets the current value
+   *
+   * @param {String} v
+   */
+  set value(v) {
+    this.codemirror.setValue(v);
+  }
+
+  /**
    * Gives focus to the codemirror view.
    */
   focus = () => {
