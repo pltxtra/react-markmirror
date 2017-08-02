@@ -17,6 +17,7 @@ An demo is available at https://stories.headzoo.io/react-markmirror.
 * [Toolbar Customizing](docs/toolbar.md)
 * [Dropping and Uploading Files](docs/uploading.md)
 * [Custom Prompt](docs/prompt.md)
+* [Internationalization (i18n)](docs/i18n.md)
 * [Storybook](docs/storybook.md)
 
 ## Features
