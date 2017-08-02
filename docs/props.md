@@ -103,28 +103,28 @@ Called when a change is made.
 ```
 
 **onFiles={function}**  
-Handles files which are dropped onto the editor. See the [uploading docs](docs/uploading.md) for more information.
+Handles files which are dropped onto the editor. See the [uploading docs](uploading.md) for more information.
 
 ```jsx
 <Markmirror onFiles={Markmirror.handlerUpload('http://yoursite.com/upload')} />
 ```
 
 **onPrompt={function}**  
-Handles prompting the client to input a link or image URL. See the [prompt docs](docs/prompt.md) for more information.
+Handles prompting the client to input a link or image URL. See the [prompt docs](prompt.md) for more information.
 
 ```jsx
 <Markmirror onPrompt={Markmirror.handlerPrompt} />
 ```
 
 **renderButton={function}**  
-Renders each toolbar button. See the [button customizing docs](docs/button.md) for more information.
+Renders each toolbar button. See the [button customizing docs](button.md) for more information.
 
 ```jsx
 <Markmirror renderButton={this.renderButton} />
 ```
 
 **renderToolbar={function}**  
-Renders the toolbar. See the [toolbar customizing docs](docs/toolbar.md) for more information.
+Renders the toolbar. See the [toolbar customizing docs](toolbar.md) for more information.
 
 ```jsx
 <Markmirror renderToolbar={this.renderToolbar} />
