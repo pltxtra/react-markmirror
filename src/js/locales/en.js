@@ -1,5 +1,6 @@
 const enLocale = {
   // Button title attributes.
+  previewTitle:      'Preview',
   h1Title:           'Header 1',
   h2Title:           'Header 2',
   h3Title:           'Header 3',
@@ -13,6 +14,7 @@ const enLocale = {
   fullTitle:         'Fullscreen',
   uploadTitle:       'Upload',
   // Button labels when an icon isn't used.
+  previewLabel:      'P',
   h1Label:           'H1',
   h2Label:           'H2',
   h3Label:           'H3',

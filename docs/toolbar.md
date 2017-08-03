@@ -2,7 +2,7 @@ Toolbar Customizing
 ===================
 React Markmirror includes a default toolbar with default buttons, but you can use your own toolbar by setting the `renderToolbar` prop.
 
-This example adds a custom toolbar which only renders the bold and italic buttons.
+This example adds a custom toolbar which only renders a few buttons.
 
 ```jsx
 import React from 'react';
@@ -21,17 +21,17 @@ class Editor extends React.Component {
   };
 
   /**
-   * Removes every button from the toolbar except the bold and italic buttons
+   * Removes every button from the toolbar except the bold, italic, and full screen buttons
    * 
    * @param {Markmirror} markmirror     The object calling the function
    * @param {Function}   renderButton   Renders the standard button for the given command
-   * @param {Boolean}    showUpload     Whether the upload button should be displayed
-   * @param {Boolean}    showFullscreen Whether the fullscreen button should be displayed
+   * @param {Object}     show           List of buttons that should be displayed
    */
-  renderToolbar = (markmirror, renderButton, showUpload, showFullscreen) => (
+  renderToolbar = (markmirror, renderButton, show) => (
     <div className="markmirror__toolbar myapp__toolbar">
       {renderButton('bold')}
       {renderButton('italic')}
+      {show['full'] ? renderButton('full') : null}
     </div>
   );
 

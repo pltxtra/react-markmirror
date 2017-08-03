@@ -1,6 +1,7 @@
 /**
  * @see https://github.com/encharm/Font-Awesome-SVG-PNG/tree/master/black/svg
  */
+export { default as preview } from './preview';
 export { default as bold } from './bold';
 export { default as italic } from './italic';
 export { default as image } from './image';

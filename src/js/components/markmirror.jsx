@@ -8,10 +8,10 @@ import 'codemirror/addon/edit/continuelist';
 import 'codemirror/addon/selection/active-line';
 
 import enLocale from '../locales/en';
+import * as commands from '../commands';
 import { mimeIsMatch } from '../utils/mime';
 import { cssAddClass, cssRemoveClass } from '../utils/css';
 import { CSS_PREFIX, THEMES, DROP_TYPE_IMAGE, DROP_TYPE_LINK } from '../const';
-import { getCursorState, execCommand, setProps, setLocale, CMD_FULL, CMD_UPLOAD } from '../commands';
 import { isSupported, isFullScreen, requestFullscreen, exitFullscreen } from '../utils/fullscreen';
 import { objectKeyFilter, objectForEach, objectAssign } from '../utils/objects';
 
@@ -99,6 +99,10 @@ export default class Markmirror extends React.Component {
      */
     onPrompt:          PropTypes.func,
     /**
+     * Called in order to display the preview.
+     */
+    onPreview:         PropTypes.func,
+    /**
      * Renders each toolbar button.
      */
     renderToolbar:     PropTypes.func,
@@ -126,6 +130,7 @@ export default class Markmirror extends React.Component {
     renderToolbar:     null,
     renderButton:      null,
     onFiles:           null,
+    onPreview:         null,
     onPrompt:          handlerPrompt,
     onChange:          () => {},
     onCursor:          () => {}
@@ -142,15 +147,17 @@ export default class Markmirror extends React.Component {
    */
   constructor(props) {
     super(props);
-    setProps(props);
-    setLocale(props.i18n);
+    commands.setProps(props);
+    commands.setLocale(props.i18n);
 
     this.rootRef       = null;
     this.fileRef       = null;
     this.codemirrorRef = null;
     this.codemirror    = null;
+    this.preview       = null;
     this.state         = {
       cursor:    {},
+      isPreview: false,
       isFocused: false
     };
   }
@@ -248,7 +255,7 @@ export default class Markmirror extends React.Component {
    */
   execCommand = (command, e) => {
     if (e) e.preventDefault();
-    execCommand(this.codemirror, command);
+    commands.execCommand(this.codemirror, command);
   };
 
   /**
@@ -274,6 +281,22 @@ export default class Markmirror extends React.Component {
   };
 
   /**
+   * Switches between code and preview mode
+   */
+  commandPreview = () => {
+    const isPreview = !this.state.isPreview;
+    if (isPreview) {
+      this.preview = this.props.onPreview(this.value);
+      this.destroyCodemirror();
+    }
+    this.setState({ isPreview }, () => {
+      if (!isPreview) {
+        this.setupCodemirror();
+      }
+    });
+  };
+
+  /**
    * Bound to the CodeMirror 'focus' event
    */
   handleCodemirrorFocus = () => {
@@ -291,7 +314,7 @@ export default class Markmirror extends React.Component {
    * Bound to the CodeMirror 'cursorActivity' event
    */
   handleCodemirrorCursorActivity = () => {
-    const cursor = getCursorState(this.codemirror);
+    const cursor = commands.getCursorState(this.codemirror);
     this.props.onCursor(cursor);
     this.setState({ cursor });
   };
@@ -377,12 +400,19 @@ export default class Markmirror extends React.Component {
    * @returns {XML}
    */
   renderButton = (command, handler) => {
-    const pressed = (this.state.cursor[command] || (command === CMD_FULL && isFullScreen()));
+    const pressed = (
+      this.state.cursor[command] ||
+      (command === commands.CMD_FULL && isFullScreen()) ||
+      (command === commands.CMD_PREVIEW && this.state.isPreview)
+    );
+
     if (!handler) {
-      if (command === CMD_FULL) {
+      if (command === commands.CMD_FULL) {
         handler = this.commandFullScreen;
-      } else if (command === CMD_UPLOAD) {
+      } else if (command === commands.CMD_UPLOAD) {
         handler = this.commandUpload;
+      } else if (command === commands.CMD_PREVIEW) {
+        handler = this.commandPreview;
       } else {
         handler = this.execCommand.bind(this, command);
       }
@@ -410,25 +440,42 @@ export default class Markmirror extends React.Component {
    * @returns {XML}
    */
   renderToolbar = () => {
-    const showUpload = this.props.onFiles !== null;
+    const show = {
+      [commands.CMD_H1]:      true,
+      [commands.CMD_H2]:      true,
+      [commands.CMD_H3]:      true,
+      [commands.CMD_BOLD]:    true,
+      [commands.CMD_ITALIC]:  true,
+      [commands.CMD_QUOTE]:   true,
+      [commands.CMD_OLIST]:   true,
+      [commands.CMD_ULIST]:   true,
+      [commands.CMD_LINK]:    true,
+      [commands.CMD_IMAGE]:   true,
+      [commands.CMD_FULL]:    isSupported(),
+      [commands.CMD_PREVIEW]: this.props.onPreview !== null,
+      [commands.CMD_UPLOAD]:  this.props.onFiles !== null
+    };
+
     if (this.props.renderToolbar) {
-      return this.props.renderToolbar(this, this.renderButton, showUpload, isSupported());
+      return this.props.renderToolbar(this, this.renderButton, show);
     }
     return (
-      <Toolbar
-        renderButton={this.renderButton}
-        showUpload={showUpload}
-        showFullscreen={isSupported()}
-      />
+      <Toolbar show={show} renderButton={this.renderButton} />
     );
   };
+
+  renderPreview = () => (
+    <div className={`${CSS_PREFIX}__editor ${CSS_PREFIX}--preview`}>
+      <div className="CodeMirror" dangerouslySetInnerHTML={{ __html: this.preview }} />
+    </div>
+  );
 
   /**
    * @returns {XML}
    */
   render() {
     const { value, name, theme, onFiles, className, ...props } = this.props;
-    const { isFocused } = this.state;
+    const { isPreview, isFocused } = this.state;
 
     return (
       <div
@@ -438,20 +485,22 @@ export default class Markmirror extends React.Component {
         allowFullScreen
       >
         {this.renderToolbar()}
-        <div className={classNames(
-          `${CSS_PREFIX}__editor`,
-          {
-            [`${CSS_PREFIX}__editor--focused`]: isFocused
-          }
-          )}
-        >
-          <textarea
-            ref={(ref) => { this.codemirrorRef = ref; }}
-            name={name}
-            defaultValue={value}
-            autoComplete="off"
-          />
-        </div>
+        {isPreview ? this.renderPreview() : (
+          <div className={classNames(
+            `${CSS_PREFIX}__editor`,
+            {
+              [`${CSS_PREFIX}__editor--focused`]: isFocused
+            }
+            )}
+          >
+            <textarea
+              ref={(ref) => { this.codemirrorRef = ref; }}
+              name={name}
+              defaultValue={value}
+              autoComplete="off"
+            />
+          </div>
+        )}
         {!onFiles ? null : (
           <input
             type="file"

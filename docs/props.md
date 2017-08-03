@@ -145,6 +145,13 @@ Handles prompting the client to input a link or image URL. See the [prompt docs]
 <Markmirror onPrompt={Markmirror.handlerPrompt} />
 ```
 
+**onPreview={function}**  
+Handles generating a preview of the markdown code. See the [preview docs](preview.md) for more information.
+
+```jsx
+<Markmirror onPreview={value => (Marked(value))} />
+```
+
 **renderButton={function}**  
 Renders each toolbar button. See the [button customizing docs](button.md) for more information.
 

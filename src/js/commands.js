@@ -7,18 +7,19 @@ const TOK_ULIST      = 'uList';
 const TOK_STRING     = 'string';
 const TOK_VARIABLE_2 = 'variable-2';
 
-export const CMD_H1     = 'h1';
-export const CMD_H2     = 'h2';
-export const CMD_H3     = 'h3';
-export const CMD_BOLD   = 'bold';
-export const CMD_ITALIC = 'italic';
-export const CMD_QUOTE  = 'quote';
-export const CMD_OLIST  = 'oList';
-export const CMD_ULIST  = 'uList';
-export const CMD_LINK   = 'link';
-export const CMD_IMAGE  = 'image';
-export const CMD_FULL   = 'full';
-export const CMD_UPLOAD = 'upload';
+export const CMD_PREVIEW  = 'preview';
+export const CMD_H1       = 'h1';
+export const CMD_H2       = 'h2';
+export const CMD_H3       = 'h3';
+export const CMD_BOLD     = 'bold';
+export const CMD_ITALIC   = 'italic';
+export const CMD_QUOTE    = 'quote';
+export const CMD_OLIST    = 'oList';
+export const CMD_ULIST    = 'uList';
+export const CMD_LINK     = 'link';
+export const CMD_IMAGE    = 'image';
+export const CMD_FULL     = 'full';
+export const CMD_UPLOAD   = 'upload';
 
 const COMMANDS = {
   [CMD_H1]: {
