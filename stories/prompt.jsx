@@ -81,7 +81,7 @@ class Story extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      code: DEFAULT_VALUE.trim()
+      code: 'Click the "Link" or "Image" buttons to see the prompt.'
     };
   }
 
@@ -95,6 +95,13 @@ class Story extends React.Component {
     })
   );
 
+  renderToolbar = (markmirror, renderButton) => (
+    <div className="my-app__toolbar">
+      {renderButton('link')}
+      {renderButton('image')}
+    </div>
+  );
+
   render() {
     const { code } = this.state;
 
@@ -102,6 +109,7 @@ class Story extends React.Component {
       <section>
         <Markmirror
           value={code}
+          renderToolbar={this.renderToolbar}
           onPrompt={this.handlePrompt}
           onChange={this.handleChange}
         />
