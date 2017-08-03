@@ -72,6 +72,13 @@ True to wrap long lines.
 <Markmirror lineWrapping={false} />
 ```
 
+**styleActiveLine={boolean}**  
+True to highlight the active line. The CSS class `CodeMirror-activeline-background` gets added to the active line.
+
+```jsx
+<Markmirror styleActiveLine={false} />
+```
+
 **acceptedFileTypes={array}**  
 List of mime types for files which may be dropped/uploaded.
 

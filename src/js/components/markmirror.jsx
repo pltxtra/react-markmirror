@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import CodeMirror from 'codemirror';
-import 'codemirror/mode/xml/xml';
+
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/addon/edit/continuelist';
+import 'codemirror/addon/selection/active-line';
 
 import enLocale from '../locales/en';
 import { mimeIsMatch } from '../utils/mime';
@@ -62,6 +63,10 @@ export default class Markmirror extends React.Component {
      */
     lineWrapping:      PropTypes.bool,
     /**
+     * Whether to highlight the active line.
+     */
+    styleActiveLine:   PropTypes.bool,
+    /**
      * Options passed to the internal CodeMirror instance.
      */
     codemirrorOptions: PropTypes.object,
@@ -113,6 +118,7 @@ export default class Markmirror extends React.Component {
     indentWithTabs:    false,
     lineNumbers:       false,
     lineWrapping:      true,
+    styleActiveLine:   true,
     codemirrorOptions: {},
     codemirrorEvents:  {},
     acceptedFileTypes: [],
@@ -175,13 +181,14 @@ export default class Markmirror extends React.Component {
   setupCodemirror() {
     this.destroyCodemirror();
     const options = objectAssign({
-      mode:           'markdown',
-      theme:          THEMES.indexOf(this.props.theme) !== -1 ? 'default' : this.props.theme,
-      readOnly:       this.props.readOnly,
-      tabSize:        this.props.tabSize,
-      lineNumbers:    this.props.lineNumbers,
-      lineWrapping:   this.props.lineWrapping,
-      indentWithTabs: this.props.indentWithTabs
+      mode:            'markdown',
+      theme:           THEMES.indexOf(this.props.theme) !== -1 ? 'default' : this.props.theme,
+      readOnly:        this.props.readOnly,
+      tabSize:         this.props.tabSize,
+      lineNumbers:     this.props.lineNumbers,
+      lineWrapping:    this.props.lineWrapping,
+      indentWithTabs:  this.props.indentWithTabs,
+      styleActiveLine: this.props.styleActiveLine
     }, this.props.codemirrorOptions);
 
     this.codemirror = CodeMirror.fromTextArea(this.codemirrorRef, options);
