@@ -4,6 +4,7 @@ import '../node_modules/bootstrap/less/bootstrap.less';
 import './story.less';
 
 import './standard';
+import './height';
 import './theme';
 import './buttons';
 import './toolbar';
