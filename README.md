@@ -24,7 +24,7 @@ An demo is available at https://stories.headzoo.io/react-markmirror.
 
 ## Features
 
-![Standard screenshot](docs/images/standard.png)
+![Standard screenshot](docs/images/theme-dark.png)
 
 * Themes
 * Syntax highlighting
