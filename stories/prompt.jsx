@@ -1,7 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import Markmirror from '../src/js/components/markmirror';
-import { DEFAULT_VALUE } from './const';
 
 class Modal extends React.Component {
   constructor(props) {

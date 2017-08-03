@@ -82,6 +82,10 @@ export default class Markmirror extends React.Component {
      */
     onChange:          PropTypes.func,
     /**
+     * Called when there is activity on the cursor.
+     */
+    onCursor:          PropTypes.func,
+    /**
      * Called when files are dropped on the editor.
      */
     onFiles:           PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.string]),
@@ -117,7 +121,8 @@ export default class Markmirror extends React.Component {
     renderButton:      null,
     onFiles:           null,
     onPrompt:          handlerPrompt,
-    onChange:          () => {}
+    onChange:          () => {},
+    onCursor:          () => {}
   };
 
   static handlerDataURI = handlerDataURI;
@@ -279,7 +284,9 @@ export default class Markmirror extends React.Component {
    * Bound to the CodeMirror 'cursorActivity' event
    */
   handleCodemirrorCursorActivity = () => {
-    this.setState({ cursor: getCursorState(this.codemirror) });
+    const cursor = getCursorState(this.codemirror);
+    this.props.onCursor(cursor);
+    this.setState({ cursor });
   };
 
   /**

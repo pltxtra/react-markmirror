@@ -117,6 +117,13 @@ Called when a change is made.
 <Markmirror onChange={(value) => { console.log(value); }} />
 ```
 
+**onCursor={function}**  
+Called when there is cursor activity.
+
+```jsx
+<Markmirror onCursor={(cursor) => { console.log(cursor.token.end); }} />
+```
+
 **onFiles={function}**  
 Handles files which are dropped onto the editor. See the [uploading docs](uploading.md) for more information.
 
