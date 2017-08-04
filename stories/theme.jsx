@@ -38,7 +38,7 @@ class Story extends React.Component {
           </select>
         </section>
         <section>
-          <Markmirror value={code} theme={theme} onChange={this.handleChange} />
+          <Markmirror value={code} theme={theme} onChange={this.handleChange} lineNumbers />
         </section>
       </div>
     );
