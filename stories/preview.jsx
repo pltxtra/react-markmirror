@@ -8,7 +8,8 @@ class Story extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      code: DEFAULT_VALUE.trim()
+      code: `The [Marked](https://www.npmjs.com/package/marked) npm package is needed to display previews in your own projects. Use \`npm install --save marked\` to install it.
+${DEFAULT_VALUE}`
     };
   }
 
@@ -20,19 +21,13 @@ class Story extends React.Component {
     const { code } = this.state;
 
     return (
-      <div>
-        <p>
-          The <a href="https://www.npmjs.com/package/marked">marked</a> npm package is needed to display previews in your own projects.
-          Use <code>npm install --save marked</code> to install it.
-        </p>
-        <section>
-          <Markmirror
-            value={code}
-            onPreview={value => (Marked(value))}
-            onChange={this.handleChange}
-          />
-        </section>
-      </div>
+      <section>
+        <Markmirror
+          value={code}
+          onPreview={value => (Marked(value))}
+          onChange={this.handleChange}
+        />
+      </section>
     );
   }
 }
