@@ -7,19 +7,23 @@ const TOK_ULIST      = 'uList';
 const TOK_STRING     = 'string';
 const TOK_VARIABLE_2 = 'variable-2';
 
-export const CMD_PREVIEW  = 'preview';
-export const CMD_H1       = 'h1';
-export const CMD_H2       = 'h2';
-export const CMD_H3       = 'h3';
-export const CMD_BOLD     = 'bold';
-export const CMD_ITALIC   = 'italic';
-export const CMD_QUOTE    = 'quote';
-export const CMD_OLIST    = 'oList';
-export const CMD_ULIST    = 'uList';
-export const CMD_LINK     = 'link';
-export const CMD_IMAGE    = 'image';
-export const CMD_FULL     = 'full';
-export const CMD_UPLOAD   = 'upload';
+export const CMD_PREVIEW   = 'preview';
+export const CMD_H1        = 'h1';
+export const CMD_H2        = 'h2';
+export const CMD_H3        = 'h3';
+export const CMD_BOLD      = 'bold';
+export const CMD_ITALIC    = 'italic';
+export const CMD_QUOTE     = 'quote';
+export const CMD_OLIST     = 'oList';
+export const CMD_ULIST     = 'uList';
+export const CMD_LINK      = 'link';
+export const CMD_IMAGE     = 'image';
+export const CMD_FULL      = 'full';
+export const CMD_UPLOAD    = 'upload';
+export const CMD_FIND      = 'find';
+export const CMD_FIND_NEXT = 'findNext';
+export const CMD_FIND_PREV = 'findPrev';
+export const CMD_REPLACE   = 'replace';
 
 const COMMANDS = {
   [CMD_H1]: {
@@ -317,7 +321,11 @@ export function getCursorState(cm) {
 }
 
 export function execCommand(cm, key) {
-  const cs  = getCursorState(cm);
-  const cmd = COMMANDS[key];
-  operations[cmd.type + (cs[key] ? 'Remove' : 'Apply')](cm, cmd);
+  if (COMMANDS[key] !== undefined) {
+    const cs  = getCursorState(cm);
+    const cmd = COMMANDS[key];
+    operations[cmd.type + (cs[key] ? 'Remove' : 'Apply')](cm, cmd);
+  } else {
+    cm.execCommand(key);
+  }
 }

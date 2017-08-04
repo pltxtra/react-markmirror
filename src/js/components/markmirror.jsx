@@ -6,6 +6,9 @@ import CodeMirror from 'codemirror';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/addon/edit/continuelist';
 import 'codemirror/addon/selection/active-line';
+import 'codemirror/addon/dialog/dialog';
+import 'codemirror/addon/search/search';
+import 'codemirror/addon/search/jump-to-line';
 
 import enLocale from '../locales/en';
 import * as commands from '../commands';
@@ -22,6 +25,7 @@ import Toolbar from './toolbar';
 import Button from './button';
 
 import '../../../node_modules/codemirror/lib/codemirror.css';
+import 'codemirror/addon/dialog/dialog.css';
 import '../../less/main.less';
 
 export default class Markmirror extends React.Component {
@@ -66,6 +70,10 @@ export default class Markmirror extends React.Component {
      * Whether to highlight the active line.
      */
     styleActiveLine:   PropTypes.bool,
+    /**
+     * True to show the search related buttons.
+     */
+    showSearch:        PropTypes.bool,
     /**
      * Options passed to the internal CodeMirror instance.
      */
@@ -123,6 +131,7 @@ export default class Markmirror extends React.Component {
     lineNumbers:       false,
     lineWrapping:      true,
     styleActiveLine:   true,
+    showSearch:        true,
     codemirrorOptions: {},
     codemirrorEvents:  {},
     acceptedFileTypes: [],
@@ -452,6 +461,7 @@ export default class Markmirror extends React.Component {
       [commands.CMD_LINK]:    true,
       [commands.CMD_IMAGE]:   true,
       [commands.CMD_FULL]:    isSupported(),
+      [commands.CMD_FIND]:    this.props.showSearch,
       [commands.CMD_PREVIEW]: this.props.onPreview !== null,
       [commands.CMD_UPLOAD]:  this.props.onFiles !== null
     };

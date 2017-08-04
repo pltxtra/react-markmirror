@@ -44,6 +44,13 @@ Set to true to make the editor read only.
 <Markmirror readOnly={true} />
 ```
 
+**showSearch={boolean}**  
+True to add find/replace buttons.
+
+```jsx
+<Markmirror showSearch={true} />
+```
+
 **tabSize={number}**  
 Number of spaces that make up a tab.
 

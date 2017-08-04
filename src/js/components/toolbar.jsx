@@ -5,6 +5,10 @@ import * as commands from '../commands';
 const Toolbar = ({ renderButton, show, ...props }) => (
   <div {...props} className={`${CSS_PREFIX}__toolbar`}>
     {show[commands.CMD_PREVIEW] ? renderButton(commands.CMD_PREVIEW) : null}
+    {show[commands.CMD_FIND] ? renderButton(commands.CMD_FIND) : null}
+    {show[commands.CMD_FIND] ? renderButton(commands.CMD_FIND_PREV) : null}
+    {show[commands.CMD_FIND] ? renderButton(commands.CMD_FIND_NEXT) : null}
+    {show[commands.CMD_FIND] || show[commands.CMD_PREVIEW] ? <span className="markmirror__button-separator" /> : null}
     {show[commands.CMD_H1] ? renderButton(commands.CMD_H1) : null}
     {show[commands.CMD_H2] ? renderButton(commands.CMD_H2) : null}
     {show[commands.CMD_H3] ? renderButton(commands.CMD_H3) : null}
