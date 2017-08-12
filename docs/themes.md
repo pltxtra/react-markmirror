@@ -48,3 +48,14 @@ const App = () => (
 ```
 
 _Note: The actual location of the Codemirror theme css files depends on your setup. The example above assumes node_modules is in your web root._
+
+The light and dark themes may be combined with CodeMirror themes in the following way.
+
+```jsx
+import React from 'react';
+import Markmirror from 'react-markmirror';
+
+const App = () => (
+  <Markmirror theme="dark,dracula" />
+);
+```
