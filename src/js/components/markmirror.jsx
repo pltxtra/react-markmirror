@@ -196,9 +196,18 @@ export default class Markmirror extends React.Component {
    */
   setupCodemirror() {
     this.destroyCodemirror();
+    const themes = this.props.theme.split(',').map(s => s.trim());
+    let theme = 'default';
+    for (let i = 0; i < themes.length; i++) {
+      if (THEMES.indexOf(themes[i]) === -1) {
+        theme = themes[i];
+        break;
+      }
+    }
+
     const options = objectAssign({
+      theme,
       mode:            'markdown',
-      theme:           THEMES.indexOf(this.props.theme) !== -1 ? 'default' : this.props.theme,
       readOnly:        this.props.readOnly,
       tabSize:         this.props.tabSize,
       lineNumbers:     this.props.lineNumbers,
@@ -484,8 +493,17 @@ export default class Markmirror extends React.Component {
    * @returns {XML}
    */
   render() {
-    const { value, name, theme, onFiles, className, ...props } = this.props;
+    const { value, name, onFiles, className, ...props } = this.props;
     const { isPreview, isFocused } = this.state;
+
+    const themes = this.props.theme.split(',').map(s => s.trim());
+    let theme = 'light';
+    for (let i = 0; i < themes.length; i++) {
+      if (THEMES.indexOf(themes[i]) !== -1) {
+        theme = themes[i];
+        break;
+      }
+    }
 
     return (
       <div

@@ -33,8 +33,8 @@ class Story extends React.Component {
           >
             <option value="light">Light</option>
             <option value="dark">Dark</option>
-            <option value="ambiance">Ambiance</option>
-            <option value="elegant">Elegant</option>
+            <option value="dark,ambiance">Ambiance</option>
+            <option value="light,elegant">Elegant</option>
           </select>
         </section>
         <section>
