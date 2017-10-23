@@ -7,6 +7,12 @@ The markdown text to render.
 ```jsx
 <Markmirror value="# Header 1" />
 ```
+**defaultValue={string}**  
+The inital markdown text to render. Changing this prop set new value to codemirror instance. This is helpful for editing multiple text  
+
+```jsx
+<Markmirror defaultValue="# Header 1" />
+```
 
 **name={string}**  
 Name given to the textarea.

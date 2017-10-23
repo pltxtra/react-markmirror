@@ -34,3 +34,14 @@ export function mimeIsMatch(mime1, mime2) {
 
   return false;
 }
+
+export function mimeTypeIsMatch(mime1, mime2) {
+  const mime1Parts = mime1.split('/', 2).map(v => v.toLowerCase());
+  const mime2Parts = mime2.split('/', 2).map(v => v.toLowerCase());
+
+  if (mime1Parts[0] === mime2Parts[0]) {
+    return true;
+  }
+
+  return false;
+}
