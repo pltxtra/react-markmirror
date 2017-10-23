@@ -12,7 +12,7 @@ import 'codemirror/addon/search/jump-to-line';
 
 import enLocale from '../locales/en';
 import * as commands from '../commands';
-import { mimeIsMatch } from '../utils/mime';
+import { mimeIsMatch, mimeTypeIsMatch } from '../utils/mime';
 import { cssAddClass, cssRemoveClass } from '../utils/css';
 import { CSS_PREFIX, THEMES, DROP_TYPE_IMAGE, DROP_TYPE_LINK } from '../const';
 import { isSupported, isFullScreen, requestFullscreen, exitFullscreen } from '../utils/fullscreen';
@@ -34,6 +34,10 @@ export default class Markmirror extends React.Component {
      * The markdown text to render.
      */
     value:             PropTypes.string,
+    /**
+     * The inital markdown text to render.
+     */
+    defaultValue:      PropTypes.string,
     /**
      * Name given to the textarea.
      */
@@ -117,7 +121,7 @@ export default class Markmirror extends React.Component {
     /**
      * Renders the toolbar.
      */
-    renderButton:      PropTypes.func
+    renderButton:      PropTypes.func,
   };
 
   static defaultProps = {
@@ -142,12 +146,12 @@ export default class Markmirror extends React.Component {
     onPreview:         null,
     onPrompt:          handlerPrompt,
     onChange:          () => {},
-    onCursor:          () => {}
+    onCursor:          () => {},
   };
 
   static handlerDataURI = handlerDataURI;
-  static handlerUpload  = handlerUpload;
-  static handlerPrompt  = handlerPrompt;
+  static handlerUpload = handlerUpload;
+  static handlerPrompt = handlerPrompt;
 
   /**
    * Constructor
@@ -159,15 +163,15 @@ export default class Markmirror extends React.Component {
     commands.setProps(props);
     commands.setLocale(props.i18n);
 
-    this.rootRef       = null;
-    this.fileRef       = null;
+    this.rootRef = null;
+    this.fileRef = null;
     this.codemirrorRef = null;
-    this.codemirror    = null;
-    this.preview       = null;
-    this.state         = {
+    this.codemirror = null;
+    this.preview = null;
+    this.state = {
       cursor:    {},
       isPreview: false,
-      isFocused: false
+      isFocused: false,
     };
   }
 
@@ -181,6 +185,9 @@ export default class Markmirror extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.theme !== this.props.theme) {
       this.setupCodemirror();
+    }
+    if (prevProps.defaultValue !== this.props.defaultValue && this.codemirror) {
+      this.codemirror.setValue(this.props.defaultValue);
     }
   }
 
@@ -205,16 +212,19 @@ export default class Markmirror extends React.Component {
       }
     }
 
-    const options = objectAssign({
-      theme,
-      mode:            'markdown',
-      readOnly:        this.props.readOnly,
-      tabSize:         this.props.tabSize,
-      lineNumbers:     this.props.lineNumbers,
-      lineWrapping:    this.props.lineWrapping,
-      indentWithTabs:  this.props.indentWithTabs,
-      styleActiveLine: this.props.styleActiveLine
-    }, this.props.codemirrorOptions);
+    const options = objectAssign(
+      {
+        theme,
+        mode:            'markdown',
+        readOnly:        this.props.readOnly,
+        tabSize:         this.props.tabSize,
+        lineNumbers:     this.props.lineNumbers,
+        lineWrapping:    this.props.lineWrapping,
+        indentWithTabs:  this.props.indentWithTabs,
+        styleActiveLine: this.props.styleActiveLine,
+      },
+      this.props.codemirrorOptions,
+    );
 
     this.codemirror = CodeMirror.fromTextArea(this.codemirrorRef, options);
     this.codemirror.setValue(this.props.value);
@@ -354,7 +364,7 @@ export default class Markmirror extends React.Component {
     e.preventDefault();
 
     const files = [];
-    const data  = e.dataTransfer;
+    const data = e.dataTransfer;
     if (data.items) {
       for (let i = 0; i < data.items.length; i++) {
         files.push(data.items[i].getAsFile());
@@ -387,12 +397,13 @@ export default class Markmirror extends React.Component {
       if (acceptedFileTypes.length === 0 || acceptedFileTypes.some(v => mimeIsMatch(v, mime))) {
         onFiles(files[i])
           .then((result) => {
-            if (result.type === DROP_TYPE_IMAGE) {
+            if (mimeTypeIsMatch(result.type, DROP_TYPE_IMAGE)) {
               this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
-            } else if (result.type === DROP_TYPE_LINK) {
-              this.codemirror.replaceSelection(`![${result.text}](${result.url})`);
+            } else {
+              this.codemirror.replaceSelection(`[${result.text}](${result.url})`);
             }
-          }).catch((err) => {
+          })
+          .catch((err) => {
             this.codemirror.replaceSelection(`${this.props.i18n.uploadError}: ${err}`);
           });
       }
@@ -418,11 +429,10 @@ export default class Markmirror extends React.Component {
    * @returns {XML}
    */
   renderButton = (command, handler) => {
-    const pressed = (
+    const pressed =
       this.state.cursor[command] ||
       (command === commands.CMD_FULL && isFullScreen()) ||
-      (command === commands.CMD_PREVIEW && this.state.isPreview)
-    );
+      (command === commands.CMD_PREVIEW && this.state.isPreview);
 
     if (!handler) {
       if (command === commands.CMD_FULL) {
@@ -441,15 +451,7 @@ export default class Markmirror extends React.Component {
     if (this.props.renderButton) {
       return this.props.renderButton(this, command, handler, pressed, title, label);
     }
-    return (
-      <Button
-        command={command}
-        handler={handler}
-        pressed={pressed}
-        title={title}
-        label={label}
-      />
-    );
+    return <Button command={command} handler={handler} pressed={pressed} title={title} label={label} />;
   };
 
   /**
@@ -472,15 +474,13 @@ export default class Markmirror extends React.Component {
       [commands.CMD_FULL]:    isSupported(),
       [commands.CMD_FIND]:    this.props.showSearch,
       [commands.CMD_PREVIEW]: this.props.onPreview !== null,
-      [commands.CMD_UPLOAD]:  this.props.onFiles !== null
+      [commands.CMD_UPLOAD]:  this.props.onFiles !== null,
     };
 
     if (this.props.renderToolbar) {
       return this.props.renderToolbar(this, this.renderButton, show);
     }
-    return (
-      <Toolbar show={show} renderButton={this.renderButton} />
-    );
+    return <Toolbar show={show} renderButton={this.renderButton} />;
   };
 
   renderPreview = () => (
@@ -508,21 +508,25 @@ export default class Markmirror extends React.Component {
     return (
       <div
         {...objectKeyFilter(props, Markmirror.propTypes)}
-        ref={(ref) => { this.rootRef = ref; }}
+        ref={(ref) => {
+          this.rootRef = ref;
+        }}
         className={classNames(CSS_PREFIX, `${CSS_PREFIX}--${theme}-theme`, className)}
         allowFullScreen
       >
         {this.renderToolbar()}
-        {isPreview ? this.renderPreview() : (
-          <div className={classNames(
-            `${CSS_PREFIX}__editor`,
-            {
-              [`${CSS_PREFIX}__editor--focused`]: isFocused
-            }
-            )}
+        {isPreview ? (
+          this.renderPreview()
+        ) : (
+          <div
+            className={classNames(`${CSS_PREFIX}__editor`, {
+              [`${CSS_PREFIX}__editor--focused`]: isFocused,
+            })}
           >
             <textarea
-              ref={(ref) => { this.codemirrorRef = ref; }}
+              ref={(ref) => {
+                this.codemirrorRef = ref;
+              }}
               name={name}
               defaultValue={value}
               autoComplete="off"
@@ -533,7 +537,9 @@ export default class Markmirror extends React.Component {
           <input
             type="file"
             style={{ display: 'none' }}
-            ref={(ref) => { this.fileRef = ref; }}
+            ref={(ref) => {
+              this.fileRef = ref;
+            }}
             onChange={this.handleFileChange}
           />
         )}
