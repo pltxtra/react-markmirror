@@ -16,7 +16,7 @@ const Button = ({ command, handler, pressed, title, label, ...props }) => {
   );
 
   return (
-    <button {...props} className={className} onClick={handler} title={title}>
+    <button type="button" {...props} className={className} onClick={handler} title={title}>
       {isTextIcon ? null : <Icon command={command} /> }
       <span className={labelClass}>
         {label}
