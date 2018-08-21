@@ -1,9 +1,9 @@
 {
-  "name": "react-markmirror",
+  "name": "plt-react-markmirror",
   "version": "0.4.21",
-  "description": "React Markdown Editor",
+  "description": "pltXtra's React Markdown Editor",
   "main": "dist/index.js",
-  "author": "Jed Watson",
+  "author": "Jed Watson/Anton Persson",
   "contributors": "Sean Hickey",
   "license": "MIT",
   "homepage": "https://github.com/headzoo/react-markmirror",
